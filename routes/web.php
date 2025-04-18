@@ -1,10 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\FamilyTreeController;
+use App\Http\Controllers\PersonController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', HomeController::class);
 
-Route::get('/family-trees', [FamilyTreeController::class, 'index']);
+Route::resource('accounts', AccountController::class);
+
+Route::resource('family-trees', FamilyTreeController::class);
+
+Route::resource('people', PersonController::class);

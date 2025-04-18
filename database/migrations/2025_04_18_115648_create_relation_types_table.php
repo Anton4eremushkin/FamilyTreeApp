@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('relation_type', function (Blueprint $table) {
+        Schema::create('relation_types', function (Blueprint $table) {
             $table->smallIncrements('id');
             $table->string('name', 64)->unique();
             $table->integer('degree')->default(1);
             $table->boolean('is_directed');
             $table->string('reverse_name', 64)->nullable();
+            $table->timestamps();
         });
     }
 
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('relation_type');
+        Schema::dropIfExists('relation_types');
     }
 };

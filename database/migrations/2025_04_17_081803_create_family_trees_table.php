@@ -11,15 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('family_tree', function (Blueprint $table) {
+        Schema::create('family_trees', function (Blueprint $table) {
             $table->id();
             $table->string('name', 128);
             $table->enum('state', ['private', 'public', 'archived']);
-            $table->timestampsTz();
-        });
-
-        Schema::table('family_tree', function (Blueprint $table) {
-            $table->index('state', 'idx_family_tree_state');
+            $table->timestamps();
         });
     }
 
@@ -28,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('family_tree');
+        Schema::dropIfExists('family_trees');
     }
 };

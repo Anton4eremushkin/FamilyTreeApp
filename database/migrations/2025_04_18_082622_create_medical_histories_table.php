@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('medical_histories', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('person_id');
+            $table->Integer('person_id');
             $table->string('disease_name', 128);
             $table->date('diagnosis_date')->nullable();
             $table->string('diagnosis_date_text', 64)->nullable();

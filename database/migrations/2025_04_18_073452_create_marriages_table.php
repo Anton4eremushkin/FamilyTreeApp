@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('marriages', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('person1_id');
+            $table->Integer('person1_id');
             $table->string('premarital_surname1', 64)->nullable();
-            $table->bigInteger('person2_id');
+            $table->Integer('person2_id');
             $table->string('premarital_surname2', 64)->nullable();
             $table->enum('type', ['civil', 'religious']);
             $table->date('begin_date');

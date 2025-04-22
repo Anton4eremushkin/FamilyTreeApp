@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('life_events', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->bigInteger('person_id');
+            $table->id();
+            $table->Integer('person_id');
             $table->integer('author_id')->nullable();
             $table->date('date')->nullable();
             $table->string('date_text', 64)->nullable();

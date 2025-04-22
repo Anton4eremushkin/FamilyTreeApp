@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('education', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('person_id');
+            $table->Integer('person_id');
             $table->string('education_type', 50);
             $table->string('educational_institution', 256);
             $table->date('start_date')->nullable();

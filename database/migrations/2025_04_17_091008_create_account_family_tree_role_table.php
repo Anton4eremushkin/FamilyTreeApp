@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('account_family_tree_role', function (Blueprint $table) {
-            $table->bigInteger('family_tree_id', 'false', 'true');
-            $table->bigInteger('account_id', 'false', 'true');
-            $table->smallInteger('role_id');
+            $table->Integer('family_tree_id');
+            $table->Integer('account_id');
+            $table->Integer('role_id');
 
-            $table->primary(['family_tree_id', 'account_id']);
+            $table->primary(['family_tree_id', 'account_id','role_id']);
             $table->foreign('family_tree_id')
                 ->references('id')
                 ->on('family_trees')

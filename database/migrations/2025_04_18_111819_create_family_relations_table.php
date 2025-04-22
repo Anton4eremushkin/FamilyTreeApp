@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('family_relations', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->bigInteger('person_from');
-            $table->bigInteger('person_to');
-            $table->smallInteger('relation_type_id');
+            $table->id();
+            $table->Integer('person_from');
+            $table->Integer('person_to');
+            $table->Integer('relation_type_id');
             $table->timestamps();
 
             $table->unique(['person_from', 'person_to']);

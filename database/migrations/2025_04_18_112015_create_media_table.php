@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('media', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('uploader_id', )->nullable();
-            $table->bigInteger('person_id', );
-            $table->bigInteger('life_event_id')->nullable();
+            $table->Integer('uploader_id', )->nullable();
+            $table->Integer('person_id', );
+            $table->Integer('life_event_id')->nullable();
             $table->text('url')->default('');
             $table->enum('media_type', ['photo', 'video', 'audio', 'document']);
             $table->string('place', 256)->nullable();

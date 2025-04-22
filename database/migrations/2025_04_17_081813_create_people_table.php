@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('people', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('family_tree_id','false','true');
+            $table->Integer('family_tree_id');
             $table->text('url_img')->default('');
             $table->string('full_name', 128);
             $table->enum('gender', ['male', 'female', 'other']);

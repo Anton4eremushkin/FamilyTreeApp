@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('relation_types', function (Blueprint $table) {
-            $table->smallIncrements('id');
+            $table->id();
             $table->string('name', 64)->unique();
             $table->integer('degree')->default(1);
             $table->boolean('is_directed');

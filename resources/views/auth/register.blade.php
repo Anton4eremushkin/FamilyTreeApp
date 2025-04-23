@@ -4,7 +4,7 @@
     <div class="max-w-md mx-auto mt-10 bg-white p-6 rounded-lg shadow-md">
         <h2 class="text-2xl font-bold mb-6 text-center">Регистрация</h2>
 
-        <form method="POST" action="{{ route('register') }}">
+        <form method="POST" action="{{ route('register.perform') }}">
             @csrf
 
             <div class="mb-4">

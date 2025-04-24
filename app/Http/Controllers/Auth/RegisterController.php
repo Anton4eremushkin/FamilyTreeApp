@@ -4,42 +4,39 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 use Illuminate\Support\Facades\Validator;
-use App\Models\Account;
+use Illuminate\Support\Facades\Auth;
 
 class RegisterController extends Controller
 {
     public function show()
     {
-        return view('auth.register'); // файл resources/views/auth/register.blade.php
+        return view('auth.register');
     }
 
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'username' => 'required|string|max:64|unique:account,username',
-            'email' => 'required|email|max:256|unique:account,email',
-            'password' => 'required|string|min:6|confirmed',
+        // Валидация
+        $request->validate([
+            'username' => 'required|string|max:64|unique:users,username',
+            'email' => 'required|email|max:256|unique:users,email',
+            'password' => 'required|confirmed|min:6',
+            'url_img' => 'required|url'
         ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        $account = Account::create([
+        // Создание пользователя
+        $user = User::create([
             'username' => $request->username,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'url_img' => '/default-avatar.png', // временно
+            'password' => $request->password, // Laravel сам хеширует через мутатор
+            'url_img' => $request->url_img,
         ]);
 
-        // Вход после регистрации
-        auth()->login($account);
+        // Автоматический вход после регистрации
+        Auth::login($user);
 
-        return redirect('/'); // или на страницу профиля
+        // Редирект, например, на страницу дерева
+        return redirect('/tree')->with('success', 'Регистрация успешна!');
     }
 }
-

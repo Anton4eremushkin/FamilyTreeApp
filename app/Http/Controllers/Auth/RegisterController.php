@@ -37,6 +37,6 @@ class RegisterController extends Controller
         Auth::login($user);
 
         // Редирект, например, на страницу дерева
-        return redirect('/tree')->with('success', 'Регистрация успешна!');
+        return redirect('/')->with('success', 'Регистрация успешна!');
     }
 }

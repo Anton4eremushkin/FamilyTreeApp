@@ -13,7 +13,17 @@
         <button>Логотип</button>
         <button>Древо</button>
         <button>Публичные древа</button>
-        <button>Профиль/войти</button>
+        @auth
+            <button>{{ Auth::user()->name }}</button>
+        @else
+            <a href="{{ route('login') }}"><button>Войти</button></a>
+        @endauth
+{{--        @auth--}}
+{{--            <form method="POST" action="{{ route('logout') }}">--}}
+{{--                @csrf--}}
+{{--                <button type="submit">Выйти</button>--}}
+{{--            </form>--}}
+{{--        @endauth--}}
     </div>
     <div class="leaf-section">
         <div class="center-box">Какая-нибудь картинка или текст</div>

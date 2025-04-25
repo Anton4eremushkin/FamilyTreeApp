@@ -9,6 +9,13 @@
 <body>
 <!-- Главная страница -->
 <div class="tree-wrapper">
+    <div style="position: absolute; top: 0; left: 0; background: #eee; padding: 10px;">
+        @if(Auth::check())
+            ✅ Авторизован: {{ Auth::user()->name }}
+        @else
+            ❌ Не авторизован
+        @endif
+    </div>
     <div class="tree-header">
         <button>Логотип</button>
         <button>Древо</button>

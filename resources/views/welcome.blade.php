@@ -9,28 +9,21 @@
 <body>
 <!-- Главная страница -->
 <div class="tree-wrapper">
-    <div style="position: absolute; top: 0; left: 0; background: #eee; padding: 10px;">
-        @if(Auth::check())
-            ✅ Авторизован: {{ Auth::user()->name }}
-        @else
-            ❌ Не авторизован
-        @endif
-    </div>
     <div class="tree-header">
         <button>Логотип</button>
         <button>Древо</button>
         <button>Публичные древа</button>
         @auth
-            <button>{{ Auth::user()->name }}</button>
+            <button>{{ Auth::user()->username }}</button>
+
+            <!-- POST запрос требует Laravel в целях безопасности -->
+            <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                @csrf
+                <button type="submit">Выйти</button>
+            </form>
         @else
             <a href="{{ route('login') }}"><button>Войти</button></a>
         @endauth
-{{--        @auth--}}
-{{--            <form method="POST" action="{{ route('logout') }}">--}}
-{{--                @csrf--}}
-{{--                <button type="submit">Выйти</button>--}}
-{{--            </form>--}}
-{{--        @endauth--}}
     </div>
     <div class="leaf-section">
         <div class="center-box">Какая-нибудь картинка или текст</div>

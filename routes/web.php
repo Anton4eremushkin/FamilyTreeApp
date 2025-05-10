@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FamilyTreeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\HomeController;
@@ -12,9 +13,11 @@ Route::get('/tree', function () { //Везде надо использовать
     return view('tree');
 });
 
-Route::get('/family-tree/{id}', function ($id) {
-    return "Добро пожаловать в древо № $id!";
-})->name('family_tree.show');
+Route::middleware('auth')->group(function () {
+    Route::get('/family-tree/create', [FamilyTreeController::class, 'create'])->name('family-tree.create');
+    Route::post('/family-tree', [FamilyTreeController::class, 'store'])->name('family-tree.store');
+    Route::get('/family-tree/{id}', [FamilyTreeController::class, 'show'])->name('family-tree.show');
+});
 
 Route::get('/register', [RegisterController::class, 'show'])->name('register.show');
 Route::post('/register', [RegisterController::class, 'register'])->name('register.perform');

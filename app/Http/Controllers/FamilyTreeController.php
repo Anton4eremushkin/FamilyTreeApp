@@ -2,64 +2,65 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\FamilyTree;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use App\Models\FamilyTree;
+use App\Models\Role;
 
 class FamilyTreeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $user = Auth::user();
+        // Проверка: уже ли привязан к какому-либо древу
+        $existing = DB::table('role_user_family_tree')
+            ->where('user_id', $user->id)
+            ->first();
+
+        if ($existing) {
+            return redirect()->route('family-tree.show', ['id' => $existing->family_tree_id]);
+        }
+
+        return view('family_tree.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+
+        $user = Auth::user();
+
+        DB::transaction(function () use ($request, $user) {
+
+
+            $tree = FamilyTree::create([
+                'name' => $request->name,
+                'state' => 'active',
+            ]);
+
+            DB::table('role_user_family_tree')->insert([
+                'user_id' => $user->id,
+                'family_tree_id' => $tree->id,
+                'role_id' => 1, // роль тут всегда admin, потому что этот человек создает древо
+            ]);
+
+
+        });
+
+        // Получаем ID дерева, к которому привязан пользователь
+        $tree_id = DB::table('role_user_family_tree')
+            ->where('user_id', $user->id)
+            ->value('family_tree_id');
+
+        return redirect()->route('family-tree.show', ['id' => $tree_id]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(FamilyTree $familyTree)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(FamilyTree $familyTree)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, FamilyTree $familyTree)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(FamilyTree $familyTree)
-    {
-        //
+    public function show(Request $request) {
+        return view('tree'); // возможно придется потом заменить на что-нибудь другое
     }
 }
+
+

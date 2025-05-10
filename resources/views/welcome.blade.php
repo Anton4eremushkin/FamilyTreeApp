@@ -11,7 +11,7 @@
 <div class="tree-wrapper">
     <div class="tree-header">
         <button>Логотип</button>
-        <button>Древо</button>
+        <a href="{{ route('family-tree.create') }}"><button>Дерево</button></a>
         <button>Публичные древа</button>
         @auth
             <button>{{ Auth::user()->username }}</button>

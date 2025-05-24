@@ -15,11 +15,11 @@
             <button>Пригласить в древо</button>
         </div>
         <div class="right-buttons">
-            <button>🔍</button>
-            <button>↓</button>
-            <button>🌐</button>
-            <button>👤</button>
             <button>режим отображения</button>
+            <button>🔍</button>
+            <button>🌐</button>
+            <button>⚙️</button>
+            <button>👤</button>
         </div>
     </div>
 
@@ -34,8 +34,6 @@
 
         <div class="canvas-controls">
             <button>🎤</button>
-            <button>⚙️</button>
-            <button>👤</button>
             <button id="zoom-in">＋</button>
             <button id="zoom-out">－</button>
         </div>

@@ -26,9 +26,19 @@
     <div class="tree-canvas">
         <div class="canvas-wrapper" id="viewport">
             <div id="canvas">
-                <div class="node" style="left: 100px; top: 100px; position: absolute;">Женщина</div>
-                <div class="line" style="left: 222px; top: 170px; position: absolute;"></div>
-                <div class="node" style="left: 300px; top: 100px; position: absolute;">Мужчина</div>
+                @foreach ($people as $index => $person)
+                    @php
+                        $left = 100 + $index * 220; // Простая раскладка по оси X
+                        $top = 100;
+                    @endphp
+                    <div class="node" style="left: {{ $left }}px; top: {{ $top }}px; position: absolute;">
+                        <img src="{{ asset('storage/' . $person->url_img) }}" alt="Фото" style="width:60px;height:60px;border-radius:50%;object-fit:cover;">
+                        <div style="margin-top: 8px; text-align:center;">
+                            <strong>{{ $person->full_name }}</strong><br>
+                            {{ $person->birth_date ? \Carbon\Carbon::parse($person->birth_date)->format('Y') : '' }}
+                        </div>
+                    </div>
+                @endforeach
             </div>
         </div>
 

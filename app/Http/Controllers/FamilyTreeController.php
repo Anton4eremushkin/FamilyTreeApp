@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\FamilyTree;
 use App\Models\Role;
+use App\Models\Person;
 
 class FamilyTreeController extends Controller
 {
@@ -58,8 +59,24 @@ class FamilyTreeController extends Controller
         return redirect()->route('family-tree.show', ['id' => $tree_id]);
     }
 
-    public function show(Request $request) {
-        return view('tree'); // возможно придется потом заменить на что-нибудь другое
+    public function show(Request $request, $id)
+    {
+        $user = Auth::user();
+
+        // Проверка: есть ли у пользователя доступ к этому древу
+        $hasAccess = DB::table('role_user_family_tree')
+            ->where('user_id', $user->id)
+            ->where('family_tree_id', $id)
+            ->exists();
+
+        if (!$hasAccess) {
+            abort(403, 'Нет доступа к этому древу');
+        }
+
+        // Получаем всех людей, принадлежащих этому древу
+        $people = Person::where('family_tree_id', $id)->get();
+
+        return view('tree', compact('people'));
     }
 }
 

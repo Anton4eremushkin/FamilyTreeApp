@@ -2,30 +2,21 @@ import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import ReactFlow, { Background, Controls, MiniMap } from 'reactflow';
 import 'reactflow/dist/style.css';
+import PersonNode from './components/PersonNode'; // Путь к компоненту
+
+const nodeTypes = {
+    person: PersonNode,
+};
 
 const generateGraph = (people) => {
     const nodes = people.map((person, index) => ({
         id: String(person.id),
-        type: 'default',
+        type: 'person',
         data: {
-            label: (
-                <div style={{ textAlign: 'center' }}>
-                    <img
-                        src={`/storage/${person.url_img}`}
-                        alt={person.full_name}
-                        style={{
-                            width: 60,
-                            height: 60,
-                            borderRadius: '50%',
-                            objectFit: 'cover'
-                        }}
-                    />
-                    <div>
-                        <strong>{person.full_name}</strong><br />
-                        {person.birth_date?.slice(0, 4)}
-                    </div>
-                </div>
-            ),
+            full_name: person.full_name,
+            birth_date: person.birth_date,
+            death_date: person.death_date,
+            url_img: person.url_img,
         },
         position: {
             x: index * 250,
@@ -50,11 +41,9 @@ const TreeApp = () => {
     }, []);
 
     return (
-        <div style={{width: '100vw', height: '100vh', position: 'relative'}}>
-            <ReactFlow nodes={nodes} edges={edges} fitView>
-                <Background/>
-
-                {/* Перемещаем Controls вправо и центрируем по высоте */}
+        <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
+            <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} fitView>
+                <Background />
                 <Controls
                     position="top-right"
                     style={{
@@ -73,12 +62,9 @@ const TreeApp = () => {
                         gap: '4px',
                     }}
                 />
-
-
-                {/* Делаем MiniMap более заметной */}
                 <MiniMap
                     nodeColor="rgba(169, 169, 169, 1)"
-                    maskColor="rgba(100, 100, 100, 0.1)" // более тёмная маска
+                    maskColor="rgba(100, 100, 100, 0.1)"
                     style={{
                         backgroundColor: 'rgba(255, 255, 255, 0.9)',
                         border: '1px solid #aaa',

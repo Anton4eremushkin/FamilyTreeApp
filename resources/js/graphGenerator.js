@@ -1,4 +1,19 @@
 // graphGenerator.js
+import CustomFamilyEdge from './components/CustomFamilyEdge';
+function determineLevelDelta(type, fromIsSubject) {
+    switch (type) {
+        case 'father':
+        case 'mother':
+            return fromIsSubject ? 1 : -1;
+        case 'child':
+            return fromIsSubject ? -1 : 1;
+        case 'husband':
+        case 'wife':
+            return 0;
+        default:
+            return null;
+    }
+}
 
 function buildRelationMap(relations) {
     const relationMap = {};
@@ -16,21 +31,6 @@ function buildRelationMap(relations) {
     }
 
     return relationMap;
-}
-
-function determineLevelDelta(type, fromIsSubject) {
-    switch (type) {
-        case 'father':
-        case 'mother':
-            return fromIsSubject ? 1 : -1;
-        case 'child':
-            return fromIsSubject ? -1 : 1;
-        case 'husband':
-        case 'wife':
-            return 0;
-        default:
-            return null;
-    }
 }
 
 export function generateGraphData(people, relations) {
@@ -171,44 +171,72 @@ export function generateGraphData(people, relations) {
         };
     });
 
-    const edges = relations
-        .filter(rel => !['brother', 'sister'].includes(rel.relation_type_name.toLowerCase()))
-        .map(rel => {
-            const type = rel.relation_type_name.toLowerCase();
-            let source = String(rel.person_from);
-            let target = String(rel.person_to);
-            let sourceHandle = null;
-            let targetHandle = null;
+    const edges = [];
 
-            if ((type === 'husband' || type === 'wife') && personMap[source] && personMap[target]) {
-                const genderSource = personMap[source].gender;
-                const genderTarget = personMap[target].gender;
+    for (const rel of relations) {
+        const type = rel.relation_type_name.toLowerCase();
+        if (['brother', 'sister'].includes(type)) continue;
 
-                if (genderSource === 'male' && genderTarget === 'female') {
-                    // Муж → Жена
-                    sourceHandle = 'right';
-                    targetHandle = 'left';
-                } else if (genderSource === 'female' && genderTarget === 'male') {
-                    // Жена → Муж
-                    [source, target] = [target, source];
-                    sourceHandle = 'right';
-                    targetHandle = 'left';
-                }
+        let source = String(rel.person_from);
+        let target = String(rel.person_to);
+        let sourceHandle = null;
+        let targetHandle = null;
+        let edgeType = 'smoothstep'; // default
+        const data = {};
+
+        const genderSource = personMap[source]?.gender;
+        const genderTarget = personMap[target]?.gender;
+
+        const isParentRelation = type === 'father' || type === 'mother' || type === 'child';
+
+        if (type === 'husband' || type === 'wife') {
+            // Женим!
+            if (genderSource === 'female' && genderTarget === 'male') {
+                [source, target] = [target, source];
             }
+            sourceHandle = 'right';
+            targetHandle = 'left';
 
-            return {
-                id: `${source}-${target}`,
-                source,
-                target,
-                type: 'smoothstep',
-                animated: true,
-                sourceHandle,
-                targetHandle,
-                label: rel.relation_type_name,
-                style: { stroke: '#888' },
-                labelStyle: { fontSize: 10, fill: '#444' },
-            };
+        } else if (isParentRelation) {
+            // Генерация кастомной линии между родителями и ребёнком
+            const childId = (type === 'child') ? source : target;
+            const parentId = (type === 'child') ? target : source;
+
+            const spouseId = spouseMap[parentId];
+            const spousePosition = nodePositions[spouseId];
+
+            if (spouseId && spousePosition) {
+                // Меняем тип ребра
+                edgeType = 'familyEdge';
+                const parentPosition = nodePositions[parentId];
+                const childPosition = nodePositions[childId];
+
+                data.spouseX = spousePosition.x + nodeWidth / 2 - 45; // 45 - абсолютно необъяснимая погрешность, без этого минуса линия уезжает вправо
+                data.spouseY = spousePosition.y + nodeHeight;
+                data.sourceX = parentPosition.x + nodeWidth / 2;
+                data.sourceY = parentPosition.y + nodeHeight;
+                data.targetX = childPosition.x + nodeWidth / 2;
+                data.targetY = childPosition.y;
+            } else {
+                // если нет второго родителя — обычная линия
+                edgeType = 'smoothstep';
+            }
+        }
+
+        edges.push({
+            id: `${source}-${target}-${type}`,
+            source,
+            target,
+            type: edgeType,
+            sourceHandle,
+            targetHandle,
+            animated: edgeType !== 'familyEdge',
+            label: type,
+            style: { stroke: '#888' },
+            labelStyle: { fontSize: 10, fill: '#444' },
+            data,
         });
+    }
 
     return { nodes, edges };
 }

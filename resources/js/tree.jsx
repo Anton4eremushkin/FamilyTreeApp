@@ -4,9 +4,14 @@ import ReactFlow, { Background, Controls, MiniMap } from 'reactflow';
 import 'reactflow/dist/style.css';
 import PersonNode from './components/PersonNode';
 import { generateGraphData } from './graphGenerator';
+import CustomFamilyEdge from './components/CustomFamilyEdge';
 
 const nodeTypes = {
     person: PersonNode,
+};
+
+const edgeTypes = {
+    familyEdge: CustomFamilyEdge,
 };
 
 const TreeApp = () => {
@@ -23,7 +28,13 @@ const TreeApp = () => {
 
     return (
         <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
-            <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} fitView>
+            <ReactFlow
+                nodes={nodes}
+                edges={edges}
+                nodeTypes={nodeTypes}
+                edgeTypes={edgeTypes}
+                fitView
+            >
                 <Background />
                 <Controls
                     position="top-right"

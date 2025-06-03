@@ -31,6 +31,7 @@
 <script>
     // Передаем данные с Blade в React
     window.peopleData = @json($people);
+    window.relationData = @json($relations);
 </script>
 </body>
 </html>

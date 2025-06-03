@@ -76,8 +76,20 @@ class FamilyTreeController extends Controller
         // Получаем всех людей, принадлежащих этому древу
         $people = Person::where('family_tree_id', $id)->get();
 
-        return view('tree', compact('people'));
+        // Получаем связи между людьми
+        $relations = DB::table('family_relation')
+            ->join('relation_type', 'family_relation.relation_type_id', '=', 'relation_type.id')
+            ->select('person_from', 'person_to', 'relation_type.name as relation_type_name')
+            ->whereIn('person_from', $people->pluck('id'))
+            ->whereIn('person_to', $people->pluck('id'))
+            ->get();
+
+        return view('tree', [
+            'people' => $people,
+            'relations' => $relations,
+        ]);
     }
+
 }
 
 

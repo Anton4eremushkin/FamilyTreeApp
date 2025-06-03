@@ -2,31 +2,11 @@ import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import ReactFlow, { Background, Controls, MiniMap } from 'reactflow';
 import 'reactflow/dist/style.css';
-import PersonNode from './components/PersonNode'; // Путь к компоненту
+import PersonNode from './components/PersonNode';
+import { generateGraphData } from './graphGenerator';
 
 const nodeTypes = {
     person: PersonNode,
-};
-
-const generateGraph = (people) => {
-    const nodes = people.map((person, index) => ({
-        id: String(person.id),
-        type: 'person',
-        data: {
-            full_name: person.full_name,
-            birth_date: person.birth_date,
-            death_date: person.death_date,
-            url_img: person.url_img,
-        },
-        position: {
-            x: index * 250,
-            y: 100,
-        },
-    }));
-
-    const edges = [];
-
-    return { nodes, edges };
 };
 
 const TreeApp = () => {
@@ -35,7 +15,8 @@ const TreeApp = () => {
 
     useEffect(() => {
         const people = window.peopleData || [];
-        const { nodes, edges } = generateGraph(people);
+        const relations = window.relationData || [];
+        const { nodes, edges } = generateGraphData(people, relations);
         setNodes(nodes);
         setEdges(edges);
     }, []);

@@ -50,12 +50,12 @@ const PersonNode = ({ data }) => {
             <div style={{fontSize: '12px', color: '#555'}}>{dateLabel}</div>
 
             {/* Узлы соединения */}
-            <Handle type="target" position={Position.Top} id="topParents" style={{ background: '#555' }}/>
-            <Handle type="source" position={Position.Bottom} id="bottomChildren" style={{ background: '#555' }}/>
+            <Handle type="target" position={Position.Top} id="topParents" style={{  width: 0, height: 0, opacity: 0, pointerEvents: 'none'  }}/>
+            <Handle type="source" position={Position.Bottom} id="bottomChildren" style={{  width: 0, height: 0, opacity: 0, pointerEvents: 'none'  }}/>
 
             {/* Для прочих связей, если надо */}
-            <Handle type="source" position={Position.Right} id="right" style={{ background: '#555' }}/>
-            <Handle type="target" position={Position.Left} id="left" style={{ background: '#555' }}/>
+            <Handle type="source" position={Position.Right} id="right" style={{  width: 0, height: 0, opacity: 0, pointerEvents: 'none'  }}/>
+            <Handle type="target" position={Position.Left} id="left" style={{  width: 0, height: 0, opacity: 0, pointerEvents: 'none'  }}/>
         </div>
     );
 };

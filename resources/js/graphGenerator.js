@@ -217,9 +217,6 @@ export function generateGraphData(people, relations) {
                 data.sourceY = parentPosition.y + nodeHeight;
                 data.targetX = childPosition.x + nodeWidth / 2;
                 data.targetY = childPosition.y;
-            } else {
-                // если нет второго родителя — обычная линия
-                edgeType = 'smoothstep';
             }
         }
 
@@ -227,15 +224,15 @@ export function generateGraphData(people, relations) {
             id: `${source}-${target}-${type}`,
             source,
             target,
-            type: edgeType,
+            type: 'smoothstep',
             sourceHandle,
             targetHandle,
-            animated: edgeType !== 'familyEdge',
-            label: type,
-            style: { stroke: '#888' },
-            labelStyle: { fontSize: 10, fill: '#444' },
+            animated: false,
+            label: '', // Убираем подпись связи
+            style: { stroke: '#888', strokeDasharray: '0', strokeWidth: 2 }, // Сплошная серая линия
             data,
         });
+
     }
 
     return { nodes, edges };

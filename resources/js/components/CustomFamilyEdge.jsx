@@ -43,11 +43,14 @@ const CustomFamilyEdge = ({
     return (
         <path
             d={edgePath}
-            stroke="black"
+            stroke="#888"
             strokeWidth={2}
             fill="none"
             markerEnd={markerEnd}
+            strokeLinecap="round"
+            strokeLinejoin="round"
         />
+
     );
 };
 

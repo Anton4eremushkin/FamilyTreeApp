@@ -47,8 +47,6 @@ const CustomFamilyEdge = ({
             strokeWidth={2}
             fill="none"
             markerEnd={markerEnd}
-            strokeLinecap="round"
-            strokeLinejoin="round"
         />
 
     );

@@ -224,15 +224,14 @@ export function generateGraphData(people, relations) {
             id: `${source}-${target}-${type}`,
             source,
             target,
-            type: 'smoothstep',
+            type: edgeType,
             sourceHandle,
             targetHandle,
             animated: false,
-            label: '', // Убираем подпись связи
-            style: { stroke: '#888', strokeDasharray: '0', strokeWidth: 2 }, // Сплошная серая линия
+            label: '',
+            style: { stroke: '#888', strokeDasharray: '0', strokeWidth: 2  },
             data,
         });
-
     }
 
     return { nodes, edges };

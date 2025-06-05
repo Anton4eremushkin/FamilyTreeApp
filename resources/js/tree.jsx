@@ -5,6 +5,7 @@ import 'reactflow/dist/style.css';
 import PersonNode from './components/PersonNode';
 import { generateGraphData } from './graphGenerator';
 import CustomFamilyEdge from './components/CustomFamilyEdge';
+import PersonModal from './components/PersonModal';
 
 const nodeTypes = {
     person: PersonNode,
@@ -17,6 +18,7 @@ const edgeTypes = {
 const TreeApp = () => {
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
+    const [selectedPerson, setSelectedPerson] = useState(null);
 
     useEffect(() => {
         const people = window.peopleData || [];
@@ -34,6 +36,7 @@ const TreeApp = () => {
                 nodeTypes={nodeTypes}
                 edgeTypes={edgeTypes}
                 fitView
+                onNodeDoubleClick={(_, node) => setSelectedPerson(node.data)}
             >
                 <Background />
                 <Controls
@@ -64,6 +67,18 @@ const TreeApp = () => {
                     }}
                 />
             </ReactFlow>
+
+            {selectedPerson && (
+                <PersonModal
+                    person={selectedPerson}
+                    onClose={() => setSelectedPerson(null)}
+                    onSave={(updated) => {
+                        console.log('Сохраняю…', updated);
+                        // здесь позже вызовем API и обновим состояние древа
+                        setSelectedPerson(null);
+                    }}
+                />
+            )}
         </div>
     );
 };

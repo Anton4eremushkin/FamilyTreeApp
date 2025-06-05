@@ -1,5 +1,5 @@
-// graphGenerator.js
 import CustomFamilyEdge from './components/CustomFamilyEdge';
+
 function determineLevelDelta(type, fromIsSubject) {
     switch (type) {
         case 'father':
@@ -17,19 +17,15 @@ function determineLevelDelta(type, fromIsSubject) {
 
 function buildRelationMap(relations) {
     const relationMap = {};
-
     for (const rel of relations) {
         const from = String(rel.person_from);
         const to = String(rel.person_to);
         const type = rel.relation_type_name.toLowerCase();
-
         if (!relationMap[from]) relationMap[from] = [];
         if (!relationMap[to]) relationMap[to] = [];
-
         relationMap[from].push({ id: to, type });
         relationMap[to].push({ id: from, type });
     }
-
     return relationMap;
 }
 
@@ -38,14 +34,11 @@ export function generateGraphData(people, relations) {
     const levels = {};
     const queue = [];
     const visited = new Set();
-
     const allIds = people.map(p => String(p.id));
     if (allIds.length === 0) return { nodes: [], edges: [] };
 
     const personMap = {};
-    for (const p of people) {
-        personMap[String(p.id)] = p;
-    }
+    for (const p of people) personMap[String(p.id)] = p;
 
     const rootId = allIds[0];
     levels[rootId] = 0;
@@ -57,23 +50,18 @@ export function generateGraphData(people, relations) {
         visited.add(current);
 
         const relatives = relationMap[current] || [];
-
         for (const rel of relatives) {
             const relativeId = rel.id;
             const type = rel.type;
-
             const raw = relations.find(r =>
                 (String(r.person_from) === current && String(r.person_to) === relativeId) ||
                 (String(r.person_to) === current && String(r.person_from) === relativeId)
             );
-
             const fromIsSubject = raw && String(raw.person_from) === current;
             const delta = determineLevelDelta(type, fromIsSubject);
-
             if (delta === null) continue;
 
             const targetLevel = currentLevel + delta;
-
             if (!(relativeId in levels)) {
                 levels[relativeId] = targetLevel;
                 queue.push(relativeId);
@@ -105,51 +93,45 @@ export function generateGraphData(people, relations) {
     const ySpacing = 150;
     const placed = new Set();
 
+    // 💡 Центрирование по оси X каждого уровня
     for (const [levelStr, ids] of Object.entries(levelsGrouped)) {
         const level = parseInt(levelStr);
         let xCursor = 0;
+        const row = [];
 
         for (const id of ids) {
             if (placed.has(id)) continue;
 
             const spouseId = spouseMap[id];
-            if (spouseId && ids.includes(spouseId) && !placed.has(spouseId)) {
-                const person = personMap[id];
-                const spouse = personMap[spouseId];
-                if (!person || !spouse) continue;
+            const bothInLevel = spouseId && ids.includes(spouseId) && !placed.has(spouseId);
 
-                let husbandId, wifeId;
-                if (person.gender === 'male' && spouse.gender === 'female') {
-                    husbandId = id;
-                    wifeId = spouseId;
-                } else if (person.gender === 'female' && spouse.gender === 'male') {
-                    husbandId = spouseId;
-                    wifeId = id;
-                } else {
-                    // Если гендер не определён, ставим как попало
-                    husbandId = id;
-                    wifeId = spouseId;
-                }
-
-                nodePositions[husbandId] = {
-                    x: xCursor,
-                    y: level * (nodeHeight + ySpacing)
-                };
-                nodePositions[wifeId] = {
-                    x: xCursor + nodeWidth + 10,
-                    y: level * (nodeHeight + ySpacing)
-                };
-                xCursor += 2 * nodeWidth + 30;
-
-                placed.add(husbandId);
-                placed.add(wifeId);
-            } else {
-                nodePositions[id] = {
-                    x: xCursor,
-                    y: level * (nodeHeight + ySpacing)
-                };
-                xCursor += nodeWidth + xSpacing;
+            if (bothInLevel) {
+                row.push([id, spouseId]);
                 placed.add(id);
+                placed.add(spouseId);
+            } else {
+                row.push([id]);
+                placed.add(id);
+            }
+        }
+
+        // 💡 Центрирование относительно общего количества пар/одиночек
+        const totalWidth = row.reduce((sum, pair) => {
+            return sum + (pair.length === 2 ? nodeWidth * 2 + 10 : nodeWidth) + xSpacing;
+        }, -xSpacing);
+
+        xCursor = -totalWidth / 2;
+
+        for (const pair of row) {
+            if (pair.length === 2) {
+                const [husbandId, wifeId] = pair;
+                nodePositions[husbandId] = { x: xCursor, y: level * (nodeHeight + ySpacing) };
+                nodePositions[wifeId] = { x: xCursor + nodeWidth + 10, y: level * (nodeHeight + ySpacing) };
+                xCursor += nodeWidth * 2 + 10 + xSpacing;
+            } else {
+                const id = pair[0];
+                nodePositions[id] = { x: xCursor, y: level * (nodeHeight + ySpacing) };
+                xCursor += nodeWidth + xSpacing;
             }
         }
     }
@@ -172,7 +154,6 @@ export function generateGraphData(people, relations) {
     });
 
     const edges = [];
-
     for (const rel of relations) {
         const type = rel.relation_type_name.toLowerCase();
         if (['brother', 'sister'].includes(type)) continue;
@@ -181,37 +162,30 @@ export function generateGraphData(people, relations) {
         let target = String(rel.person_to);
         let sourceHandle = null;
         let targetHandle = null;
-        let edgeType = 'smoothstep'; // default
+        let edgeType = 'step';
         const data = {};
 
         const genderSource = personMap[source]?.gender;
         const genderTarget = personMap[target]?.gender;
-
         const isParentRelation = type === 'father' || type === 'mother' || type === 'child';
 
         if (type === 'husband' || type === 'wife') {
-            // Женим!
             if (genderSource === 'female' && genderTarget === 'male') {
                 [source, target] = [target, source];
             }
             sourceHandle = 'right';
             targetHandle = 'left';
-
         } else if (isParentRelation) {
-            // Генерация кастомной линии между родителями и ребёнком
             const childId = (type === 'child') ? source : target;
             const parentId = (type === 'child') ? target : source;
 
             const spouseId = spouseMap[parentId];
             const spousePosition = nodePositions[spouseId];
-
             if (spouseId && spousePosition) {
-                // Меняем тип ребра
                 edgeType = 'familyEdge';
                 const parentPosition = nodePositions[parentId];
                 const childPosition = nodePositions[childId];
-
-                data.spouseX = spousePosition.x + nodeWidth / 2 - 45; // 45 - абсолютно необъяснимая погрешность, без этого минуса линия уезжает вправо
+                data.spouseX = spousePosition.x + nodeWidth / 2 - 45;
                 data.spouseY = spousePosition.y + nodeHeight;
                 data.sourceX = parentPosition.x + nodeWidth / 2;
                 data.sourceY = parentPosition.y + nodeHeight;
@@ -229,7 +203,7 @@ export function generateGraphData(people, relations) {
             targetHandle,
             animated: false,
             label: '',
-            style: { stroke: '#888', strokeDasharray: '0', strokeWidth: 2  },
+            style: { stroke: '#888', strokeDasharray: '0', strokeWidth: 2 },
             data,
         });
     }

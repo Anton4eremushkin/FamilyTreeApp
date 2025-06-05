@@ -19,6 +19,7 @@ const TreeApp = () => {
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
     const [selectedPerson, setSelectedPerson] = useState(null);
+    const [loadingPerson, setLoadingPerson] = useState(false);
 
     useEffect(() => {
         const people = window.peopleData || [];
@@ -28,6 +29,48 @@ const TreeApp = () => {
         setEdges(edges);
     }, []);
 
+    // При двойном клике делаем запрос на бэк за полной персоной по ID
+    const handleNodeDoubleClick = async (_, node) => {
+        setLoadingPerson(true);
+        try {
+            const res = await fetch(`/person/${node.id}`); // предполагаем, что id у node — это person_id
+            if (!res.ok) throw new Error('Ошибка загрузки персоны');
+            const data = await res.json();
+            setSelectedPerson(data);
+        } catch (e) {
+            alert(e.message);
+        } finally {
+            setLoadingPerson(false);
+        }
+    };
+
+    // Сохраняем изменения, обновляем nodes
+    const handleSavePerson = async (updated) => {
+        try {
+            const res = await fetch(`/person/${updated.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updated),
+            });
+            if (!res.ok) throw new Error('Ошибка сохранения');
+            const savedPerson = await res.json();
+
+            // Обновим узлы, чтобы изменения появились на дереве
+            setNodes((nds) =>
+                nds.map((node) =>
+                    node.id === savedPerson.id
+                        ? { ...node, data: { ...node.data, ...savedPerson } }
+                        : node
+                )
+            );
+
+            setSelectedPerson(null);
+            alert('Сохранено успешно');
+        } catch (e) {
+            alert(e.message);
+        }
+    };
+
     return (
         <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
             <ReactFlow
@@ -36,48 +79,35 @@ const TreeApp = () => {
                 nodeTypes={nodeTypes}
                 edgeTypes={edgeTypes}
                 fitView
-                onNodeDoubleClick={(_, node) => setSelectedPerson(node.data)}
+                onNodeDoubleClick={handleNodeDoubleClick}
             >
                 <Background />
-                <Controls
-                    position="top-right"
-                    style={{
-                        width: '40px',
-                        height: 'auto',
-                        top: '40%',
-                        right: '5px',
-                        transform: 'translateY(-50%)',
-                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                        borderRadius: '8px',
-                        boxShadow: '0 0 10px rgba(0,0,0,0.1)',
-                        padding: '4px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: '4px',
-                    }}
-                />
-                <MiniMap
-                    nodeColor="rgba(169, 169, 169, 1)"
-                    maskColor="rgba(100, 100, 100, 0.1)"
-                    style={{
-                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                        border: '1px solid #aaa',
-                        boxShadow: '0 0 5px rgba(0,0,0,0.2)',
-                    }}
-                />
+                <Controls /*...*/ />
+                <MiniMap /*...*/ />
             </ReactFlow>
 
-            {selectedPerson && (
+            {selectedPerson && !loadingPerson && (
                 <PersonModal
                     person={selectedPerson}
                     onClose={() => setSelectedPerson(null)}
-                    onSave={(updated) => {
-                        console.log('Сохраняю…', updated);
-                        // здесь позже вызовем API и обновим состояние древа
-                        setSelectedPerson(null);
-                    }}
+                    onSave={handleSavePerson}
                 />
+            )}
+            {loadingPerson && (
+                <div
+                    style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        backgroundColor: 'rgba(255,255,255,0.9)',
+                        padding: 20,
+                        borderRadius: 8,
+                        boxShadow: '0 0 10px rgba(0,0,0,0.2)',
+                    }}
+                >
+                    Загрузка...
+                </div>
             )}
         </div>
     );

@@ -4,62 +4,82 @@ namespace App\Http\Controllers;
 
 use App\Models\Person;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PersonController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    // Получить данные персоны по ID
+    public function show($id)
     {
-        //
+        $person = Person::find($id);
+
+        if (!$person) {
+            return response()->json(['error' => 'Person not found'], 404);
+        }
+
+        return response()->json($person);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    // Обновить данные персоны
+    public function update(Request $request, $id)
     {
-        //
+        $person = Person::find($id);
+
+        if (!$person) {
+            return response()->json(['error' => 'Person not found'], 404);
+        }
+
+        $validated = $request->validate([
+            'full_name' => 'required|string|max:128',
+            'url_img' => 'required|string',
+            'gender' => ['required', Rule::in(['male', 'female', 'other'])],
+            'birth_date' => 'nullable|date',
+            'birth_date_text' => 'nullable|string|max:32',
+            'birth_place' => 'nullable|string|max:128',
+            'death_date' => 'nullable|date',
+            'death_date_text' => 'nullable|string|max:32',
+            'death_place' => 'nullable|string|max:128',
+            'status' => ['required', Rule::in(['living', 'deceased', 'unknown'])],
+        ]);
+
+        $person->update($validated);
+
+        return response()->json($person);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Создать новую персону
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'family_tree_id' => 'required|integer|exists:family_tree,id',
+            'full_name' => 'required|string|max:128',
+            'url_img' => 'required|string',
+            'gender' => ['required', Rule::in(['male', 'female', 'other'])],
+            'birth_date' => 'nullable|date',
+            'birth_date_text' => 'nullable|string|max:32',
+            'birth_place' => 'nullable|string|max:128',
+            'death_date' => 'nullable|date',
+            'death_date_text' => 'nullable|string|max:32',
+            'death_place' => 'nullable|string|max:128',
+            'status' => ['required', Rule::in(['living', 'deceased', 'unknown'])],
+        ]);
+
+        $person = Person::create($validated);
+
+        return response()->json($person, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Person $person)
+    // Удалить персону
+    public function destroy($id)
     {
-        //
-    }
+        $person = Person::find($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Person $person)
-    {
-        //
-    }
+        if (!$person) {
+            return response()->json(['error' => 'Person not found'], 404);
+        }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Person $person)
-    {
-        //
-    }
+        $person->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Person $person)
-    {
-        //
+        return response()->json(null, 204);
     }
 }

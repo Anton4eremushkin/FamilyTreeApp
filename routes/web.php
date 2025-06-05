@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\PersonController;
 
 Route::get('/', HomeController::class)->name('home');
 
@@ -30,3 +31,9 @@ Route::post('/logout', function () {
     Auth::logout();
     return redirect()->route('home');
 })->name('logout');
+
+Route::get('/person/{id}', [PersonController::class, 'show']);
+Route::put('/person/{id}', [PersonController::class, 'update']);
+Route::post('person', [PersonController::class, 'store']);
+Route::delete('person/{id}', [PersonController::class, 'destroy']);
+

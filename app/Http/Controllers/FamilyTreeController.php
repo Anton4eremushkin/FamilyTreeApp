@@ -84,9 +84,12 @@ class FamilyTreeController extends Controller
             ->whereIn('person_to', $people->pluck('id'))
             ->get();
 
+        $treeId = $id;
+
         return view('tree', [
             'people' => $people,
             'relations' => $relations,
+            'treeId' => $treeId,
         ]);
     }
 

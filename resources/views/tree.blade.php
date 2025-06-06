@@ -32,6 +32,7 @@
     // Передаем данные с Blade в React
     window.peopleData = @json($people);
     window.relationData = @json($relations);
+    window.userRole = @json(auth()->user()?->roleInTree($treeId) ?? 'guest');
 </script>
 </body>
 </html>

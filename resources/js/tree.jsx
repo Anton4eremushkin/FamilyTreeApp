@@ -20,6 +20,9 @@ const TreeApp = () => {
     const [edges, setEdges] = useState([]);
     const [selectedPerson, setSelectedPerson] = useState(null);
     const [loadingPerson, setLoadingPerson] = useState(false);
+    const userRole = window.userRole;
+    const isReadOnly = ['guest', 'user'].includes(userRole);
+
 
     useEffect(() => {
         const people = window.peopleData || [];
@@ -82,8 +85,33 @@ const TreeApp = () => {
                 onNodeDoubleClick={handleNodeDoubleClick}
             >
                 <Background />
-                <Controls /*...*/ />
-                <MiniMap /*...*/ />
+                <Controls
+                    position="top-right"
+                    style={{
+                        width: '40px',
+                        height: 'auto',
+                        top: '40%',
+                        right: '5px',
+                        transform: 'translateY(-50%)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                        borderRadius: '8px',
+                        boxShadow: '0 0 10px rgba(0,0,0,0.1)',
+                        padding: '4px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '4px',
+                    }}
+                />
+                <MiniMap
+                    nodeColor="rgba(169, 169, 169, 1)"
+                    maskColor="rgba(100, 100, 100, 0.1)"
+                    style={{
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                        border: '1px solid #aaa',
+                        boxShadow: '0 0 5px rgba(0,0,0,0.2)',
+                    }}
+                />
             </ReactFlow>
 
             {selectedPerson && !loadingPerson && (
@@ -91,6 +119,7 @@ const TreeApp = () => {
                     person={selectedPerson}
                     onClose={() => setSelectedPerson(null)}
                     onSave={handleSavePerson}
+                    readOnly={isReadOnly}
                 />
             )}
             {loadingPerson && (

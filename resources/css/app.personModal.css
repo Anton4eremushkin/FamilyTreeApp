@@ -1,0 +1,313 @@
+.person-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.person-modal-window {
+    width: 66vw;
+    height: 66vh;
+    background: #fff;
+    border-radius: 16px;
+    position: relative;
+    padding-right: 14px;
+    display: flex;
+    gap: 24px;
+    border: 2px solid rgb(192,192,192);
+}
+
+.person-modal-content-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    box-sizing: content-box;
+    display: flex;
+    gap: 24px;
+    padding: 24px;
+}
+
+/* Левая колонка */
+.person-modal-left-col {
+    flex: 0 0 33%;
+}
+
+.person-modal-img {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+.person-modal-field-box {
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+.person-modal-label {
+    font-size: 12px;
+    color: #656;
+    margin-bottom: 4px;
+}
+
+.person-modal-input {
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.person-modal-text-button {
+    margin-top: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: #000;
+    padding: 0;
+    font-family: inherit;
+}
+
+/* Правая колонка */
+.person-modal-right-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.person-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.person-modal-header h3 {
+    margin: 0;
+}
+
+.person-modal-add-button {
+    background-color: #4caf50;
+    color: white;
+    font-size: 20px;
+    line-height: 1;
+    padding: 4px 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.person-modal-category-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+}
+
+.person-modal-category-button {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: #f7f7f7;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.person-modal-placeholder {
+    flex: 1;
+    margin-top: 24px;
+    color: #666;
+}
+
+/* Глобальные кнопки */
+.person-modal-global-buttons {
+    position: fixed;
+    top: 16px;
+    right: 24px;
+    z-index: 1000;
+    display: flex;
+    gap: 12px;
+}
+
+.person-modal-save-button {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: none;
+    background: #4caf50;
+    color: #fff;
+    cursor: pointer;
+}
+
+.person-modal-close-button {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: none;
+    background: #f44336;
+    color: #fff;
+    cursor: pointer;
+}
+
+.info-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.info-block {
+    border: 2px solid #ccc;
+    border-radius: 12px;
+    padding: 12px;
+    background-color: #fafafa;
+}
+
+.info-field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 8px;
+}
+
+.info-field label {
+    font-weight: 500;
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+.info-field input {
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid #aaa;
+    font-size: 14px;
+}
+
+.field-error {
+    color: red;
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.info-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.info-save {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.info-delete {
+    background: none;
+    color: #e53935;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.person-modal-category-buttons {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.person-modal-category-button {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    background: #f5f5f5;
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.person-modal-category-button:hover {
+    background: #e0e0e0;
+}
+
+.person-modal-category-button.active {
+    border-color: #666;
+    background: #ddd;
+    font-weight: 600;
+}
+
+.person-modal-info-block {
+    border: 2px solid gray;
+    border-radius: 8px;
+    padding: 16px;
+    max-height: 70vh;
+    overflow-y: auto;
+    margin-top: 8px;
+    background: white;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.person-modal-info-block label {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.person-modal-info-block input[type="text"],
+.person-modal-info-block input[type="number"],
+.person-modal-info-block input[type="date"],
+.person-modal-info-block select,
+.person-modal-info-block textarea {
+    padding: 6px 8px;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-top: 4px;
+    resize: vertical;
+}
+
+.person-modal-info-block textarea {
+    min-height: 50px;
+}
+
+.person-modal-info-block .error {
+    color: red;
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.person-modal-info-block-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.person-modal-save-button {
+    background-color: #28a745;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    font-weight: 600;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.person-modal-save-button:hover {
+    background-color: #218838;
+}
+
+.person-modal-delete-button {
+    background: none;
+    border: none;
+    color: #dc3545;
+}

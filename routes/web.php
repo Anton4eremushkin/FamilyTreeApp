@@ -37,3 +37,6 @@ Route::put('/person/{id}', [PersonController::class, 'update']);
 Route::post('person', [PersonController::class, 'store']);
 Route::delete('person/{id}', [PersonController::class, 'destroy']);
 
+Route::post('/family_relation', [App\Http\Controllers\FamilyRelationController::class, 'store']);
+
+

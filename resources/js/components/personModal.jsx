@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ConfirmDialog from './ConfirmDialog';
-import '../../css/app.personModal.css';
+import '../../css/app.Modal.css';
 import PersonModalRightCol from './PersonModalRightCol';
 
 export default function PersonModal({ person, onClose, onSave, readOnly = false }) {
@@ -33,7 +33,6 @@ export default function PersonModal({ person, onClose, onSave, readOnly = false 
 
     const attemptClose = () => (isDirty && !readOnly ? setConfirm(true) : onClose());
 
-    // ...
     const [activeSection, setActiveSection] = useState(null);
     const [sectionData, setSectionData] = useState({
         marriage: [],
@@ -266,7 +265,17 @@ export default function PersonModal({ person, onClose, onSave, readOnly = false 
                         </div>
 
                         {/* Правая колонка */}
-                        <PersonModalRightCol person={person} readOnly={readOnly} />
+                        <PersonModalRightCol
+                            person={person}
+                            activeSection={activeSection}
+                            setActiveSection={setActiveSection}
+                            sectionData={sectionData}
+                            setSectionData={setSectionData}
+                            validationErrors={validationErrors}
+                            handleAddRecord={handleAddRecord}
+                            handleFieldChange={handleFieldChange}
+                            handleDelete={handleDelete}
+                            handleSave={handleSave} />
 
 
                     </div>

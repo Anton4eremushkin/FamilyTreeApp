@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import '../../css/app.personModal.css';
+import '../../css/app.Modal.css';
+import AddPersonModal from "./AddPersonModal.jsx";
 
-export default function PersonModalRightCol({ readOnly }) {
+export default function PersonModalRightCol({ readOnly, person   }) {
     const [activeCategory, setActiveCategory] = useState(null);
     const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState({});
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
     const categories = [
         { key: 'marriage', label: 'Брак' },
@@ -67,12 +69,27 @@ export default function PersonModalRightCol({ readOnly }) {
                 <button
                     type="button"
                     className="person-modal-add-button"
-                    onClick={() => alert('Добавить новую запись')}
+                    onClick={() => setIsAddModalOpen(true)}
                     title="Добавить карточку родственника"
                 >
                     +
                 </button>
             </div>
+
+            {/* Тут рендерим модалку, если она открыта */}
+            {isAddModalOpen && (
+                <AddPersonModal
+                    visible={true}
+                    onClose={() => setIsAddModalOpen(false)}
+                    basePersonId={person.id}
+                    basePersonName={person.full_name}
+                    familyTreeId={person.family_tree_id}
+                    onAddPerson={(newPerson) => {
+                        // Можно сюда добавить коллбек, чтобы обновить дерево
+                        console.log('Добавлен новый человек', newPerson);
+                    }}
+                />
+            )}
 
             <div className="person-modal-category-buttons">
                 {categories.map(({ key, label }) => (
@@ -95,7 +112,7 @@ export default function PersonModalRightCol({ readOnly }) {
                     {activeCategory === 'marriage' && (
                         <>
                             <label>
-                                Person1 ID*:
+                                Тут ID этой карточки человека*:
                                 <input
                                     type="number"
                                     value={formData.person1_id}
@@ -104,7 +121,7 @@ export default function PersonModalRightCol({ readOnly }) {
                                 {errors.person1_id && <span className="error">{errors.person1_id}</span>}
                             </label>
                             <label>
-                                Premarital Surname 1:
+                                ФИО до свадьбы (текущая карточка):
                                 <input
                                     type="text"
                                     value={formData.premarital_surname1}
@@ -112,7 +129,7 @@ export default function PersonModalRightCol({ readOnly }) {
                                 />
                             </label>
                             <label>
-                                Person2 ID*:
+                                Выберете карточку супруга/супруги*:
                                 <input
                                     type="number"
                                     value={formData.person2_id}
@@ -121,7 +138,7 @@ export default function PersonModalRightCol({ readOnly }) {
                                 {errors.person2_id && <span className="error">{errors.person2_id}</span>}
                             </label>
                             <label>
-                                Premarital Surname 2:
+                                ФИО до свадьбы (карточка супруга/супруги):
                                 <input
                                     type="text"
                                     value={formData.premarital_surname2}
@@ -129,14 +146,14 @@ export default function PersonModalRightCol({ readOnly }) {
                                 />
                             </label>
                             <label>
-                                Тип*:
+                                Тип брака*:
                                 <select
                                     value={formData.type}
                                     onChange={(e) => updateField('type', e.target.value)}
                                 >
-                                    <option value="legal">legal</option>
-                                    <option value="civil">civil</option>
-                                    <option value="cherch">cherch</option>
+                                    <option value="legal">Гражданский брак</option>
+                                    <option value="civil">Фактический брак (неофициальный)</option>
+                                    <option value="cherch">Церковный брак</option>
                                 </select>
                                 {errors.type && <span className="error">{errors.type}</span>}
                             </label>

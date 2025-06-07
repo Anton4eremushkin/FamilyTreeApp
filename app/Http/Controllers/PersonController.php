@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Education;
+use App\Models\Job;
+use App\Models\Marriage;
+use App\Models\MedicalHistory;
 use App\Models\Person;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -69,6 +73,13 @@ class PersonController extends Controller
         return response()->json($person, 201);
     }
 
+    public function getByFamilyTree($familyTreeId)
+    {
+        return response()->json(
+            Person::where('family_tree_id', $familyTreeId)->get()
+        );
+    }
+
     // Удалить персону
     public function destroy($id)
     {
@@ -82,4 +93,11 @@ class PersonController extends Controller
 
         return response()->json(null, 204);
     }
+
+    public function education()    { return $this->hasMany(Education::class); }
+    public function jobs()         { return $this->hasMany(Job::class); }
+    public function healthRecords(){ return $this->hasMany(MedicalHistory::class); }
+    public function marriagesAs1() { return $this->hasMany(Marriage::class,'person1_id'); }
+    public function marriagesAs2() { return $this->hasMany(Marriage::class,'person2_id'); }
+
 }

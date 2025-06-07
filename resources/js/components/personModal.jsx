@@ -303,11 +303,12 @@ export default function PersonModal({ person, onClose, onSave, readOnly = false 
 
             {confirm && (
                 <ConfirmDialog
-                    onConfirm={() => {
+                    text="У вас есть несохранённые изменения. Вы уверены, что хотите закрыть?"
+                    onYes={() => {
                         setConfirm(false);
                         onClose();
                     }}
-                    onCancel={() => setConfirm(false)}
+                    onNo={() => setConfirm(false)}
                 />
             )}
         </>

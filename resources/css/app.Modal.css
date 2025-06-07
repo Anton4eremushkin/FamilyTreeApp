@@ -90,15 +90,25 @@
     margin: 0;
 }
 
+.person-modal-button-group {
+    display: flex;
+    gap: 8px; /* расстояние между кнопками */
+}
+
 .person-modal-add-button {
     background-color: #4caf50;
     color: white;
-    font-size: 20px;
+    font-size: 16px;
     line-height: 1;
-    padding: 4px 10px;
+    padding: 4px 8px;
     border: none;
     border-radius: 6px;
     cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.person-modal-add-button:hover {
+    background-color: #45a047;
 }
 
 .person-modal-category-buttons {

@@ -8,6 +8,13 @@ use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\PersonController;
 
+use App\Http\Controllers\{
+    MarriageController,
+    EducationController,
+    JobController,
+    HealthRecordController
+};
+
 Route::get('/', HomeController::class)->name('home');
 
 Route::get('/tree', function () { //Везде надо использовать вариант с '/family-tree/{id}', это для проверки
@@ -38,5 +45,30 @@ Route::post('person', [PersonController::class, 'store']);
 Route::delete('person/{id}', [PersonController::class, 'destroy']);
 
 Route::post('/family_relation', [App\Http\Controllers\FamilyRelationController::class, 'store']);
+Route::get('/person/family/{familyTreeId}', [PersonController::class, 'getByFamilyTree']);
+
+// marriage
+Route::get   ('person/{person}/marriage',  [MarriageController::class, 'index']);
+Route::post  ('person/{person}/marriage',  [MarriageController::class, 'store']);
+Route::put   ('marriage/{marriage}',       [MarriageController::class, 'update']);
+Route::delete('marriage/{marriage}',       [MarriageController::class, 'destroy']);
+
+// education
+Route::get   ('person/{person}/education', [EducationController::class, 'index']);
+Route::post  ('person/{person}/education', [EducationController::class, 'store']);
+Route::put   ('education/{education}',     [EducationController::class, 'update']);
+Route::delete('education/{education}',     [EducationController::class, 'destroy']);
+
+// job
+Route::get   ('person/{person}/job',       [JobController::class, 'index']);
+Route::post  ('person/{person}/job',       [JobController::class, 'store']);
+Route::put   ('job/{job}',                 [JobController::class, 'update']);
+Route::delete('job/{job}',                 [JobController::class, 'destroy']);
+
+// health-record
+Route::get   ('person/{person}/health',    [HealthRecordController::class, 'index']);
+Route::post  ('person/{person}/health',    [HealthRecordController::class, 'store']);
+Route::put   ('health/{health_record}',    [HealthRecordController::class, 'update']);
+Route::delete('health/{health_record}',    [HealthRecordController::class, 'destroy']);
 
 

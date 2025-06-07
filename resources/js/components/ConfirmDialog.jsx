@@ -1,6 +1,12 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 export default function ConfirmDialog({ text, onYes, onNo }) {
+    const yesButtonRef = useRef();
+
+    useEffect(() => {
+        yesButtonRef.current?.focus();
+    }, []);
+
     return (
         <div
             style={{
@@ -22,11 +28,13 @@ export default function ConfirmDialog({ text, onYes, onNo }) {
                     borderRadius: 12,
                     padding: 24,
                     textAlign: 'center',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
                 }}
             >
                 <p style={{ marginBottom: 20 }}>{text}</p>
                 <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
                     <button
+                        ref={yesButtonRef}
                         style={{
                             padding: '8px 16px',
                             borderRadius: 8,

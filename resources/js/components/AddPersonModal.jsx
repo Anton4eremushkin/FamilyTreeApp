@@ -101,7 +101,7 @@ export default function AddPersonModal({
                 case 'son':
                     person_from = basePersonId;
                     person_to = newPerson.id;
-                    relation_type_id = 6;  // Для сына relation_type_id: father (6) — корректнее?
+                    relation_type_id = 6;  // Для сына relation_type_id: father (6) — корректнее
                     break;
                 case 'daughter':
                     person_from = basePersonId;
@@ -140,10 +140,10 @@ export default function AddPersonModal({
     return (
         <div className="modal-backdrop">
             <div className="modal-window">
-                <h2 className="modal-title">Добавить родственника для человека {basePersonName}</h2>
+                <h2 className="modal-title">Добавить родственника</h2>
 
                 <label>
-                    Тип связи:
+                    Тип связи (кем приходится добавляемый человеку {basePersonName}):
                     <select value={relation || ''} onChange={e => setRelation(e.target.value)}>
                         <option value="" disabled>Выберите связь</option>
                         {relationOptions.map(opt => (

@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class LifeEvent extends Model
 {
-    //
+    protected $guarded = [];
 }

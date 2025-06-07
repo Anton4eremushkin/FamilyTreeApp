@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../../css/app.Modal.css';
 import AddPersonModal from "./AddPersonModal.jsx";
+import AddRelationModal from "./AddRelationModal.jsx";
 
 export default function PersonModalRightCol({ readOnly, person   }) {
     const [activeCategory, setActiveCategory] = useState(null);
     const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState({});
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isAddRelationOpen, setIsAddRelationOpen] = useState(false);
+    const userRole = window.userRole;
+    const isReadOnly = ['guest', 'user'].includes(userRole);
+
 
     const categories = [
         { key: 'marriage', label: 'Брак' },
@@ -25,7 +30,6 @@ export default function PersonModalRightCol({ readOnly, person   }) {
     const handleCategoryClick = (key) => {
         if (readOnly) return;
         setActiveCategory(key);
-        setFormData(emptyData[key]);
         setErrors({});
     };
 
@@ -62,21 +66,78 @@ export default function PersonModalRightCol({ readOnly, person   }) {
         return null;
     }
 
+    useEffect(() => {
+        if (person && person.id) {
+            setFormData((prev) => ({
+                ...prev,
+                person1_id: person.id,
+            }));
+        }
+    }, [person]);
+
+    useEffect(() => {
+        async function fetchMarriage() {
+            if (!formData.person1_id) return;
+
+            try {
+                const response = await fetch(`/person/${formData.person1_id}/marriage`);
+                if (!response.ok) throw new Error('Ошибка сети');
+                const data = await response.json();
+                console.log('Данные брака:', data);
+                if (data && data.length > 0) {
+                    const marriageData = data[0];
+                    setFormData((prev) => ({
+                        ...prev,
+                        id: marriageData.id,
+                        person1_id: marriageData.person1_id,
+                        premarital_surname1: marriageData.premarital_surname1 || '',
+                        person2_id: marriageData.person2_id,
+                        premarital_surname2: marriageData.premarital_surname2 || '',
+                        type: marriageData.type || '',
+                        begin_date: marriageData.begin_date || '',
+                        begin_date_text: marriageData.begin_date_text || '',
+                        end_date: marriageData.end_date || '',
+                        end_date_text: marriageData.end_date_text || '',
+                        end_reason: marriageData.end_reason || '',
+                        place: marriageData.place || '',
+                        description: marriageData.description || '',
+                    }));
+                }
+            } catch (e) {
+                console.error('Ошибка при загрузке брака:', e);
+            }
+        }
+
+        fetchMarriage();
+    }, [formData.person1_id]);
+
     return (
         <div className="person-modal-right-col">
             <div className="person-modal-header">
-                <h3>Добавить информацию:</h3>
-                <button
-                    type="button"
-                    className="person-modal-add-button"
-                    onClick={() => setIsAddModalOpen(true)}
-                    title="Добавить карточку родственника"
-                >
-                    +
-                </button>
+                {isReadOnly ? <h3>Посмотреть информацию:</h3> : <h3>Добавить информацию:</h3>}
+                {!isReadOnly && (
+                    <div className="person-modal-button-group">
+                        <button
+                            type="button"
+                            className="person-modal-add-button"
+                            onClick={() => setIsAddModalOpen(true)}
+                            title="Добавить карточку родственника"
+                        >
+                            Добавить человека
+                        </button>
+                        <button
+                            type="button"
+                            className="person-modal-add-button"
+                            onClick={() => setIsAddRelationOpen(true)}
+                            title="Добавить связь между людьми"
+                        >
+                            Добавить связь
+                        </button>
+                    </div>
+                    )}
             </div>
 
-            {/* Тут рендерим модалку, если она открыта */}
+            {/* Тут рендерим модалку добавления персоны, если она открыта */}
             {isAddModalOpen && (
                 <AddPersonModal
                     visible={true}
@@ -84,6 +145,7 @@ export default function PersonModalRightCol({ readOnly, person   }) {
                     basePersonId={person.id}
                     basePersonName={person.full_name}
                     familyTreeId={person.family_tree_id}
+                    userRole={userRole}
                     onAddPerson={(newPerson) => {
                         // Можно сюда добавить коллбек, чтобы обновить дерево
                         console.log('Добавлен новый человек', newPerson);
@@ -91,8 +153,25 @@ export default function PersonModalRightCol({ readOnly, person   }) {
                 />
             )}
 
+            {/* Тут рендерим модалку добавления связи, если она открыта */}
+            {isAddRelationOpen && (
+                <AddRelationModal
+                    visible={true}
+                    onClose={() => setIsAddRelationOpen(false)}
+                    basePersonId={person.id}
+                    basePersonName={person.full_name}
+                    familyTreeId={person.family_tree_id}
+                    userRole={userRole}
+                    onRelationAdded={() => {
+                        // Можно обновить дерево или показать сообщение
+                        console.log('Связь добавлена');
+                    }}
+                />
+            )}
+
+
             <div className="person-modal-category-buttons">
-                {categories.map(({ key, label }) => (
+                {categories.map(({key, label}) => (
                     <button
                         key={key}
                         type="button"
@@ -151,6 +230,7 @@ export default function PersonModalRightCol({ readOnly, person   }) {
                                     value={formData.type}
                                     onChange={(e) => updateField('type', e.target.value)}
                                 >
+                                    <option value="">-- выберите тип брака --</option>
                                     <option value="legal">Гражданский брак</option>
                                     <option value="civil">Фактический брак (неофициальный)</option>
                                     <option value="cherch">Церковный брак</option>
@@ -217,8 +297,112 @@ export default function PersonModalRightCol({ readOnly, person   }) {
                                     onChange={(e) => updateField('description', e.target.value)}
                                 />
                             </label>
+
+                            <div className="person-modal-info-block-buttons">
+                                <button
+                                    type="button"
+                                    className="person-modal-save-button"
+                                    onClick={async () => {
+                                        // Валидация минимум
+                                        const newErrors = {};
+                                        if (!formData.person1_id) newErrors.person1_id = 'Обязательно';
+                                        if (!formData.person2_id) newErrors.person2_id = 'Обязательно';
+                                        if (!formData.type) newErrors.type = 'Обязательно';
+                                        if (!formData.begin_date) newErrors.begin_date = 'Обязательно';
+
+                                        if (Object.keys(newErrors).length > 0) {
+                                            setErrors(newErrors);
+                                            return;
+                                        }
+
+                                        setErrors({});
+
+                                        const payload = {
+                                            person1_id: Number(formData.person1_id),
+                                            premarital_surname1: formData.premarital_surname1,
+                                            person2_id: Number(formData.person2_id),
+                                            premarital_surname2: formData.premarital_surname2,
+                                            type: formData.type,
+                                            begin_date: formData.begin_date,
+                                            begin_date_text: formData.begin_date_text,
+                                            end_date: formData.end_date,
+                                            end_date_text: formData.end_date_text,
+                                            end_reason: formData.end_reason,
+                                            place: formData.place,
+                                            description: formData.description,
+                                        };
+
+                                        try {
+                                            let res;
+                                            if (formData.id) {
+                                                // Обновляем (PUT)
+                                                res = await fetch(`/marriage/${formData.id}`, {
+                                                    method: 'PUT',
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                    },
+                                                    body: JSON.stringify(payload),
+                                                });
+                                            } else {
+                                                // Создаем (POST)
+                                                res = await fetch(`/person/${formData.person1_id}/marriage`, {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                    },
+                                                    body: JSON.stringify(payload),
+                                                });
+                                            }
+
+                                            if (!res.ok) {
+                                                const errorData = await res.json();
+                                                alert('Ошибка сервера: ' + JSON.stringify(errorData));
+                                                return;
+                                            }
+
+                                            const data = await res.json();
+                                            alert('Успешно сохранено!');
+                                            // Тут нужно обновить состояние, чтобы подтянуть свежие данные из БД
+                                            // Например, вызови функцию загрузки данных заново или обнови formData
+                                        } catch (error) {
+                                            alert('Ошибка сети: ' + error.message);
+                                        }
+                                    }}
+                                >
+                                    Сохранить
+                                </button>
+
+
+                                <button
+                                    type="button"
+                                    className="person-modal-delete-button"
+                                    onClick={async () => {
+                                        if (!window.confirm('Точно удалить?')) return;
+
+                                        try {
+                                            const res = await fetch(`/marriage/${formData.id}`, {
+                                                method: 'DELETE',
+                                            });
+
+                                            if (!res.ok) {
+                                                alert('Ошибка при удалении');
+                                                return;
+                                            }
+
+                                            alert('Удалено!');
+                                            // Тут обнови состояние — например, очисти formData или закрой модалку
+                                        } catch (error) {
+                                            alert('Ошибка сети: ' + error.message);
+                                        }
+                                    }}
+                                >
+                                    Удалить
+                                </button>
+
+                            </div>
                         </>
                     )}
+
 
                     {activeCategory === 'education' && (
                         <>
@@ -284,7 +468,7 @@ export default function PersonModalRightCol({ readOnly, person   }) {
 
                     {activeCategory === 'job' && (
                         <>
-                            <label>
+                        <label>
                                 Должность*:
                                 <input
                                     type="text"
@@ -403,23 +587,6 @@ export default function PersonModalRightCol({ readOnly, person   }) {
                             </label>
                         </>
                     )}
-
-                    <div className="person-modal-info-block-buttons">
-                        <button
-                            type="button"
-                            className="person-modal-save-button"
-                            onClick={handleSave}
-                        >
-                            Сохранить
-                        </button>
-                        <button
-                            type="button"
-                            className="person-modal-delete-button"
-                            onClick={handleDelete}
-                        >
-                            Удалить
-                        </button>
-                    </div>
                 </div>
             )}
         </div>

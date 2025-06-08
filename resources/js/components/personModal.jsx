@@ -261,7 +261,7 @@ export default function PersonModal({ person, onClose, onSave, readOnly = false 
                                     </div>
                                 </>
                             )}
-                            <div style={{ height: 14 }} />
+                            <div style={{height: 14}}/>
                         </div>
 
                         {/* Правая колонка */}
@@ -275,42 +275,62 @@ export default function PersonModal({ person, onClose, onSave, readOnly = false 
                             handleAddRecord={handleAddRecord}
                             handleFieldChange={handleFieldChange}
                             handleDelete={handleDelete}
-                            handleSave={handleSave} />
+                            handleSave={handleSave}/>
 
 
                     </div>
                 </div>
             </div>
 
-            <div className="person-modal-global-buttons">
-                {!readOnly && (
+            <>
+                {/* Текущий блок с Сохранить и Закрыть */}
+                <div className="person-modal-global-buttons">
+                    {!readOnly && (
+                        <button
+                            type="button"
+                            className="person-modal-save-button"
+                            onClick={() => onSave(form)}
+                        >
+                            Сохранить
+                        </button>
+                    )}
                     <button
                         type="button"
-                        className="person-modal-save-button"
-                        onClick={() => onSave(form)}
+                        className="person-modal-close-button"
+                        onClick={attemptClose}
                     >
-                        Сохранить
+                        Закрыть
                     </button>
-                )}
-                <button
-                    type="button"
-                    className="person-modal-close-button"
-                    onClick={attemptClose}
-                >
-                    Закрыть
-                </button>
-            </div>
+                </div>
 
-            {confirm && (
-                <ConfirmDialog
-                    text="У вас есть несохранённые изменения. Вы уверены, что хотите закрыть?"
-                    onYes={() => {
-                        setConfirm(false);
-                        onClose();
-                    }}
-                    onNo={() => setConfirm(false)}
-                />
-            )}
+                {/* Отдельный див с кнопкой удаления */}
+                {!readOnly && (
+                    <div className="person-modal-delete-button-wrapper">
+                        <button
+                            type="button"
+                            className="person-modal-delete-person-button"
+                            onClick={() => {
+                                if (window.confirm("Ты точно хочешь удалить эту персону? Это необратимо!")) {
+                                    onDelete(person.id);
+                                }
+                            }}
+                        >
+                            Удалить персону
+                        </button>
+                    </div>
+                )}
+
+                {confirm && (
+                    <ConfirmDialog
+                        text="У вас есть несохранённые изменения. Вы уверены, что хотите закрыть?"
+                        onYes={() => {
+                            setConfirm(false);
+                            onClose();
+                        }}
+                        onNo={() => setConfirm(false)}
+                    />
+                )}
+            </>
         </>
     );
 }

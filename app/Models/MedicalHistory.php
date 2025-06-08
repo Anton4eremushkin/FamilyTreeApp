@@ -8,7 +8,7 @@ class MedicalHistory extends Model
 {
     public $timestamps = false;
 
-    protected $table = 'medical_history'; // если таблица называется иначе — поменяй
+    protected $table = 'health_record';
 
     protected $fillable = [
         'person_id',

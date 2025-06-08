@@ -7,6 +7,15 @@ use Illuminate\Http\Request;
 
 class HealthRecordController extends Controller
 {
+    public function index($personId)
+    {
+        $records = MedicalHistory::where('person_id', $personId)
+            ->orderBy('diagnosis_date')
+            ->get();
+
+        return response()->json($records);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

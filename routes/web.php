@@ -66,9 +66,10 @@ Route::put   ('job/{job}',                 [JobController::class, 'update']);
 Route::delete('job/{job}',                 [JobController::class, 'destroy']);
 
 // health-record
-Route::get   ('person/{person}/health',    [HealthRecordController::class, 'index']);
-Route::post  ('person/{person}/health',    [HealthRecordController::class, 'store']);
-Route::put   ('health/{health_record}',    [HealthRecordController::class, 'update']);
-Route::delete('health/{health_record}',    [HealthRecordController::class, 'destroy']);
+Route::get('/person/{person}/health_record', [HealthRecordController::class, 'index']);
+Route::post('/person/{person}/health_record', [HealthRecordController::class, 'store']);
+Route::put('/health_record/{healthRecord}', [HealthRecordController::class, 'update']);
+Route::delete('/health_record/{healthRecord}', [HealthRecordController::class, 'destroy']);
+
 
 

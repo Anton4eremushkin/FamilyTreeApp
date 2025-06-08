@@ -7,6 +7,16 @@ use Illuminate\Http\Request;
 
 class JobController extends Controller
 {
+
+    public function index($personId)
+    {
+        $jobs = Job::where('person_id', $personId)
+            ->orderBy('start_date')
+            ->get();
+
+        return response()->json($jobs);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

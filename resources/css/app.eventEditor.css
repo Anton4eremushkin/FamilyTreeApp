@@ -1,0 +1,53 @@
+/* верхняя панель */
+.event-editor-header {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+/* селект событий */
+.event-selector {
+    flex: 1;
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #f9f9f9;
+    font-size: 14px;
+}
+
+/* кнопка "Добавить новое" */
+.event-add-btn,
+.event-save-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    background: #4f8cf9;
+    color: #fff;
+    transition: opacity .2s;
+}
+.event-add-btn:disabled,
+.event-save-btn:disabled {
+    opacity: .5;
+    cursor: default;
+}
+
+/* textarea с лёгким затемнением */
+.event-editor-textarea {
+    width: 95%;
+    min-height: 180px;
+    resize: vertical;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    border: 1px solid #bbb;
+    border-radius: 12px;
+    background: #f2f2f4; /* чуть темнее остального окна */
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+/* кнопка сохранить под полем */
+.event-save-btn {
+    align-self: flex-end;
+}

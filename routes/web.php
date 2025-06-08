@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\PersonController;
+use App\Http\Controllers\LifeEventController;
 
 use App\Http\Controllers\{MarriageController,
     EducationController,
@@ -70,10 +71,15 @@ Route::post('/person/{person}/health_record', [HealthRecordController::class, 's
 Route::put('/health_record/{healthRecord}', [HealthRecordController::class, 'update']);
 Route::delete('/health_record/{healthRecord}', [HealthRecordController::class, 'destroy']);
 
-// routes/api.php
 Route::post('/upload', [UploadController::class, 'store']);
 
-// app/Http/Controllers/UploadController.php
+Route::prefix('person/{person}')->group(function () {
+    Route::get('events',        [LifeEventController::class, 'index']);
+    Route::post('events',       [LifeEventController::class, 'store']);
+    Route::put('events/{event}',[LifeEventController::class, 'update']);
+    Route::delete('events/{event}', [LifeEventController::class, 'destroy']);
+});
+
 
 
 

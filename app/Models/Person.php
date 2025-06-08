@@ -22,5 +22,8 @@ class Person extends Model
         'status',
     ];
 
-
+    public function lifeEvents()
+    {
+        return $this->hasMany(LifeEvent::class);
+    }
 }

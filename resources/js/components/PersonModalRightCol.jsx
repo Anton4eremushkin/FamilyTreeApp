@@ -2,6 +2,8 @@ import React, {useState, useEffect} from 'react';
 import '../../css/app.Modal.css';
 import AddPersonModal from "./AddPersonModal.jsx";
 import AddRelationModal from "./AddRelationModal.jsx";
+import PersonEvent from "./personEvent.jsx";
+
 
 export default function PersonModalRightCol({readOnly, person, familyTreeId, updateGraphData}) {
     const [activeCategory, setActiveCategory] = useState(null);
@@ -9,6 +11,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
     const [errors, setErrors] = useState({});
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isAddRelationOpen, setIsAddRelationOpen] = useState(false);
+    const [isEventOpen, setIsEventOpen] = useState(false);
     const [allPersons, setAllPersons] = useState([]);
     const userRole = window.userRole;
     const isReadOnly = ['guest', 'user'].includes(userRole);
@@ -262,34 +265,46 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
     }, [activeCategory, person.id]);
 
 
-
     return (
         <div className="person-modal-right-col">
             <div className="person-modal-header">
                 {isReadOnly ? <h3>Посмотреть информацию:</h3> : <h3>Добавить информацию:</h3>}
-                {!isReadOnly && (
+
                     <div className="person-modal-button-group">
+                        {!isReadOnly && (
                         <button
                             type="button"
                             className="person-modal-add-button"
                             onClick={() => setIsAddModalOpen(true)}
                             title="Добавить карточку родственника"
                         >
-                            Добавить человека
+                            Новый человек
                         </button>
+                        )}
+                        {!isReadOnly && (
                         <button
                             type="button"
                             className="person-modal-add-button"
                             onClick={() => setIsAddRelationOpen(true)}
                             title="Добавить связь между людьми"
                         >
-                            Добавить связь
+                            Новая связь
+                        </button>
+                        )}
+                        <button
+                            type="button"
+                            className="person-modal-add-button"
+                            onClick={() => setIsEventOpen(true)}
+                            title="Перейти к просмотру событий"
+                        >
+                            Посмотреть события
                         </button>
                     </div>
-                )}
+
+
             </div>
 
-            {/* Тут рендерим модалку добавления персоны, если она открыта */}
+            {/* Тут рендерим модалку добавления персоны */}
             {isAddModalOpen && (
                 <AddPersonModal
                     visible={true}
@@ -306,7 +321,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                 />
             )}
 
-            {/* Тут рендерим модалку добавления связи, если она открыта */}
+            {/* Тут рендерим модалку добавления связи */}
             {isAddRelationOpen && (
                 <AddRelationModal
                     visible={true}
@@ -321,6 +336,21 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                         console.log('Связь добавлена');
                     }}
                 />
+            )}
+
+            {/* Тут рендерим все события */}
+            {isEventOpen && (
+                <PersonEvent
+                    visible={true}
+                    onClose={() => setIsAddRelationOpen(false)}
+                    basePersonId={person.id}
+                    basePersonName={person.full_name}
+                    familyTreeId={person.family_tree_id}
+                    userRole={userRole}
+                    person={person}
+                    readOnly={isReadOnly}
+                />
+
             )}
 
 
@@ -344,16 +374,6 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                     {/* Форма для каждой категории */}
                     {activeCategory === 'marriage' && (
                         <>
-                            {/*<label>*/}
-                            {/*    Тут ID этой карточки человека*:*/}
-                            {/*    <input*/}
-                            {/*        type="number"*/}
-                            {/*        value={formData.person1_id}*/}
-                            {/*        onChange={(e) => updateField('person1_id', e.target.value)}*/}
-                            {/*        disabled={readOnly}*/}
-                            {/*    />*/}
-                            {/*    {errors.person1_id && <span className="error">{errors.person1_id}</span>}*/}
-                            {/*</label>*/}
                             <label>
                                 ФИО до свадьбы (текущая карточка):
                                 <input
@@ -368,6 +388,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                 <select
                                     value={formData.person2_id || ''}
                                     onChange={(e) => updateField('person2_id', e.target.value)}
+                                    disabled={readOnly}
                                 >
                                     <option value="" disabled>Выберите человека</option>
                                     {allPersons.map((p) => (
@@ -384,13 +405,15 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="text"
                                     value={formData.premarital_surname2}
                                     onChange={(e) => updateField('premarital_surname2', e.target.value)}
+                                    disabled={readOnly}
                                 />
                             </label>
                             <label>
-                            Тип брака*:
+                                Тип брака*:
                                 <select
                                     value={formData.type}
                                     onChange={(e) => updateField('type', e.target.value)}
+                                    disabled={readOnly}
                                 >
                                     <option value="">-- выберите тип брака --</option>
                                     <option value="legal">Гражданский брак</option>
@@ -405,6 +428,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="date"
                                     value={formData.begin_date}
                                     onChange={(e) => updateField('begin_date', e.target.value)}
+                                    disabled={readOnly}
                                 />
                                 {errors.begin_date && <span className="error">{errors.begin_date}</span>}
                             </label>
@@ -414,6 +438,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="text"
                                     value={formData.begin_date_text}
                                     onChange={(e) => updateField('begin_date_text', e.target.value)}
+                                    disabled={readOnly}
                                 />
                             </label>
                             <label>
@@ -422,6 +447,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="date"
                                     value={formData.end_date}
                                     onChange={(e) => updateField('end_date', e.target.value)}
+                                    disabled={readOnly}
                                 />
                             </label>
                             <label>
@@ -430,6 +456,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="text"
                                     value={formData.end_date_text}
                                     onChange={(e) => updateField('end_date_text', e.target.value)}
+                                    disabled={readOnly}
                                 />
                             </label>
                             <label>
@@ -437,6 +464,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                 <select
                                     value={formData.end_reason}
                                     onChange={(e) => updateField('end_reason', e.target.value)}
+                                    disabled={readOnly}
                                 >
                                     <option value=""></option>
                                     <option value="divorce">divorce</option>
@@ -450,6 +478,8 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="text"
                                     value={formData.place}
                                     onChange={(e) => updateField('place', e.target.value)}
+                                    disabled={readOnly}
+
                                 />
                             </label>
                             <label>
@@ -457,111 +487,118 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                 <textarea
                                     value={formData.description}
                                     onChange={(e) => updateField('description', e.target.value)}
+                                    disabled={readOnly}
                                 />
                             </label>
 
-                            <div className="person-modal-info-block-buttons">
-                                <button
-                                    type="button"
-                                    className="person-modal-save-button"
-                                    onClick={async () => {
-                                        // Валидация минимум
-                                        const newErrors = {};
-                                        if (!formData.person1_id) newErrors.person1_id = 'Обязательно';
-                                        if (!formData.person2_id) newErrors.person2_id = 'Обязательно';
-                                        if (!formData.type) newErrors.type = 'Обязательно';
-                                        if (!formData.begin_date) newErrors.begin_date = 'Обязательно';
+                            {!readOnly &&
+                                <div className="person-modal-info-block-buttons">
 
-                                        if (Object.keys(newErrors).length > 0) {
-                                            setErrors(newErrors);
-                                            return;
-                                        }
 
-                                        setErrors({});
+                                    <button
+                                        type="button"
+                                        className="person-modal-save-button"
+                                        onClick={async () => {
+                                            // Валидация минимум
+                                            const newErrors = {};
+                                            if (!formData.person1_id) newErrors.person1_id = 'Обязательно';
+                                            if (!formData.person2_id) newErrors.person2_id = 'Обязательно';
+                                            if (!formData.type) newErrors.type = 'Обязательно';
+                                            if (!formData.begin_date) newErrors.begin_date = 'Обязательно';
 
-                                        const payload = {
-                                            person1_id: Number(formData.person1_id),
-                                            premarital_surname1: formData.premarital_surname1,
-                                            person2_id: Number(formData.person2_id),
-                                            premarital_surname2: formData.premarital_surname2,
-                                            type: formData.type,
-                                            begin_date: formData.begin_date,
-                                            begin_date_text: formData.begin_date_text,
-                                            end_date: formData.end_date,
-                                            end_date_text: formData.end_date_text,
-                                            end_reason: formData.end_reason,
-                                            place: formData.place,
-                                            description: formData.description,
-                                        };
-
-                                        try {
-                                            let res;
-                                            if (formData.id) {
-                                                // Обновляем (PUT)
-                                                res = await fetch(`/marriage/${formData.id}`, {
-                                                    method: 'PUT',
-                                                    headers: {
-                                                        'Content-Type': 'application/json',
-                                                    },
-                                                    body: JSON.stringify(payload),
-                                                });
-                                            } else {
-                                                // Создаем (POST)
-                                                res = await fetch(`/person/${formData.person1_id}/marriage`, {
-                                                    method: 'POST',
-                                                    headers: {
-                                                        'Content-Type': 'application/json',
-                                                    },
-                                                    body: JSON.stringify(payload),
-                                                });
-                                            }
-
-                                            if (!res.ok) {
-                                                const errorData = await res.json();
-                                                alert('Ошибка сервера: ' + JSON.stringify(errorData));
+                                            if (Object.keys(newErrors).length > 0) {
+                                                setErrors(newErrors);
                                                 return;
                                             }
 
-                                            const data = await res.json();
-                                            alert('Успешно сохранено!');
-                                            // Тут нужно обновить состояние, чтобы подтянуть свежие данные из БД
-                                            // Например, вызови функцию загрузки данных заново или обнови formData
-                                        } catch (error) {
-                                            alert('Ошибка сети: ' + error.message);
-                                        }
-                                    }}
-                                >
-                                    Сохранить
-                                </button>
+                                            setErrors({});
 
+                                            const payload = {
+                                                person1_id: Number(formData.person1_id),
+                                                premarital_surname1: formData.premarital_surname1,
+                                                person2_id: Number(formData.person2_id),
+                                                premarital_surname2: formData.premarital_surname2,
+                                                type: formData.type,
+                                                begin_date: formData.begin_date,
+                                                begin_date_text: formData.begin_date_text,
+                                                end_date: formData.end_date,
+                                                end_date_text: formData.end_date_text,
+                                                end_reason: formData.end_reason,
+                                                place: formData.place,
+                                                description: formData.description,
+                                            };
 
-                                <button
-                                    type="button"
-                                    className="person-modal-delete-button"
-                                    onClick={async () => {
-                                        if (!window.confirm('Точно удалить?')) return;
+                                            try {
+                                                let res;
+                                                if (formData.id) {
+                                                    // Обновляем (PUT)
+                                                    res = await fetch(`/marriage/${formData.id}`, {
+                                                        method: 'PUT',
+                                                        headers: {
+                                                            'Content-Type': 'application/json',
+                                                        },
+                                                        body: JSON.stringify(payload),
+                                                    });
+                                                } else {
+                                                    // Создаем (POST)
+                                                    res = await fetch(`/person/${formData.person1_id}/marriage`, {
+                                                        method: 'POST',
+                                                        headers: {
+                                                            'Content-Type': 'application/json',
+                                                        },
+                                                        body: JSON.stringify(payload),
+                                                    });
+                                                }
 
-                                        try {
-                                            const res = await fetch(`/marriage/${formData.id}`, {
-                                                method: 'DELETE',
-                                            });
+                                                if (!res.ok) {
+                                                    const errorData = await res.json();
+                                                    alert('Ошибка сервера: ' + JSON.stringify(errorData));
+                                                    return;
+                                                }
 
-                                            if (!res.ok) {
-                                                alert('Ошибка при удалении');
-                                                return;
+                                                const data = await res.json();
+                                                alert('Успешно сохранено!');
+                                                // Тут нужно обновить состояние, чтобы подтянуть свежие данные из БД
+                                                // Например, вызови функцию загрузки данных заново или обнови formData
+                                            } catch (error) {
+                                                alert('Ошибка сети: ' + error.message);
                                             }
+                                        }}
+                                    >
+                                        Сохранить
+                                    </button>
 
-                                            alert('Удалено!');
-                                            // Тут обнови состояние — например, очисти formData или закрой модалку
-                                        } catch (error) {
-                                            alert('Ошибка сети: ' + error.message);
-                                        }
-                                    }}
-                                >
-                                    Удалить
-                                </button>
 
-                            </div>
+                                    <button
+                                        type="button"
+                                        className="person-modal-delete-button"
+                                        onClick={async () => {
+                                            if (!window.confirm('Точно удалить?')) return;
+
+                                            try {
+                                                const res = await fetch(`/marriage/${formData.id}`, {
+                                                    method: 'DELETE',
+                                                });
+
+                                                if (!res.ok) {
+                                                    alert('Ошибка при удалении');
+                                                    return;
+                                                }
+
+                                                alert('Удалено!');
+                                                // Тут обнови состояние — например, очисти formData или закрой модалку
+                                            } catch (error) {
+                                                alert('Ошибка сети: ' + error.message);
+                                            }
+                                        }}
+                                    >
+                                        Удалить
+                                    </button>
+
+                                </div>
+                            }
+
+
                         </>
                     )}
 
@@ -574,6 +611,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="text"
                                     value={formData.education_type}
                                     onChange={(e) => updateField('education_type', e.target.value)}
+                                    disabled={readOnly}
                                 />
                                 {errors.education_type && <span className="error">{errors.education_type}</span>}
                             </label>
@@ -583,6 +621,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="text"
                                     value={formData.institution}
                                     onChange={(e) => updateField('institution', e.target.value)}
+                                    disabled={readOnly}
                                 />
                                 {errors.institution && <span className="error">{errors.institution}</span>}
                             </label>
@@ -592,6 +631,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="date"
                                     value={formData.start_date}
                                     onChange={(e) => updateField('start_date', e.target.value)}
+                                    disabled={readOnly}
                                 />
                             </label>
                             <label>
@@ -600,6 +640,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="text"
                                     value={formData.start_date_text}
                                     onChange={(e) => updateField('start_date_text', e.target.value)}
+                                    disabled={readOnly}
                                 />
                             </label>
                             <label>
@@ -608,6 +649,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="date"
                                     value={formData.end_date}
                                     onChange={(e) => updateField('end_date', e.target.value)}
+                                    disabled={readOnly}
                                 />
                             </label>
                             <label>
@@ -616,6 +658,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="text"
                                     value={formData.end_date_text}
                                     onChange={(e) => updateField('end_date_text', e.target.value)}
+                                    disabled={readOnly}
                                 />
                             </label>
                             <label>
@@ -623,113 +666,116 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                 <textarea
                                     value={formData.description}
                                     onChange={(e) => updateField('description', e.target.value)}
+                                    disabled={readOnly}
                                 />
                             </label>
-
-                            <div className="person-modal-info-block-buttons">
-                                <button
-                                    type="button"
-                                    className="person-modal-save-button"
-                                    onClick={async () => {
-                                        /* простая минимальная проверка */
-                                        const errs = {};
-                                        if (!formData.education_type) errs.education_type = 'Обязательно';
-                                        if (!formData.institution) errs.institution = 'Обязательно';
-
-                                        if (Object.keys(errs).length) {
-                                            setErrors(errs);
-                                            return;
-                                        }
-                                        setErrors({});
-
-                                        const payload = {
-                                            person_id: person.id,
-                                            education_type: formData.education_type,
-                                            institution: formData.institution,
-                                            start_date: formData.start_date,
-                                            start_date_text: formData.start_date_text,
-                                            end_date: formData.end_date,
-                                            end_date_text: formData.end_date_text,
-                                            description: formData.description,
-                                        };
-
-                                        const isUpdate = !!formData.id;
-
-
-                                        const res = await fetch(
-                                            isUpdate
-                                                ? `/education/${formData.id}`         // PUT (обновить)
-                                                : `/person/${person.id}/education`,   // POST (создать)
-                                            {
-                                                method: isUpdate ? 'PUT' : 'POST',
-                                                headers: {
-                                                    'Content-Type': 'application/json',
-                                                    'Accept': 'application/json',
-                                                },
-                                                body: JSON.stringify(payload),
-                                            }
-                                        );
-
-                                        if (!res.ok) {
-                                            let message = 'Неизвестная ошибка';
-                                            try {
-                                                const err = await res.json();
-                                                message = JSON.stringify(err);
-                                            } catch (_) {
-                                            }
-                                            alert('Ошибка сервера: ' + message);
-                                            return;
-                                        }
-
-                                        alert('Сохранено!');
-                                        /* после сохранения перезагрузи данные, чтобы форма обновилась */
-                                        fetchEducation(person.id);
-
-                                    }}
-                                >
-                                    Сохранить
-                                </button>
-
-
-                                {formData.id && (
+                            {!readOnly &&
+                                <div className="person-modal-info-block-buttons">
                                     <button
                                         type="button"
-                                        className="person-modal-delete-button"
+                                        className="person-modal-save-button"
                                         onClick={async () => {
-                                            if (!window.confirm('Точно удалить?')) return;
+                                            /* простая минимальная проверка */
+                                            const errs = {};
+                                            if (!formData.education_type) errs.education_type = 'Обязательно';
+                                            if (!formData.institution) errs.institution = 'Обязательно';
 
-                                            try {
-                                                const res = await fetch(`/education/${formData.id}`, {
-                                                    method: 'DELETE',
-                                                });
-
-                                                if (!res.ok) {
-                                                    alert('Ошибка при удалении');
-                                                    return;
-                                                }
-
-                                                alert('Удалено!');
-                                                /* очистить форму */
-                                                setFormData(prev => ({
-                                                    ...prev,
-                                                    id: null,
-                                                    education_type: '',
-                                                    institution: '',
-                                                    start_date: '',
-                                                    start_date_text: '',
-                                                    end_date: '',
-                                                    end_date_text: '',
-                                                    description: '',
-                                                }));
-                                            } catch (e) {
-                                                alert('Ошибка сети: ' + e.message);
+                                            if (Object.keys(errs).length) {
+                                                setErrors(errs);
+                                                return;
                                             }
+                                            setErrors({});
+
+                                            const payload = {
+                                                person_id: person.id,
+                                                education_type: formData.education_type,
+                                                institution: formData.institution,
+                                                start_date: formData.start_date,
+                                                start_date_text: formData.start_date_text,
+                                                end_date: formData.end_date,
+                                                end_date_text: formData.end_date_text,
+                                                description: formData.description,
+                                            };
+
+                                            const isUpdate = !!formData.id;
+
+
+                                            const res = await fetch(
+                                                isUpdate
+                                                    ? `/education/${formData.id}`         // PUT (обновить)
+                                                    : `/person/${person.id}/education`,   // POST (создать)
+                                                {
+                                                    method: isUpdate ? 'PUT' : 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                        'Accept': 'application/json',
+                                                    },
+                                                    body: JSON.stringify(payload),
+                                                }
+                                            );
+
+                                            if (!res.ok) {
+                                                let message = 'Неизвестная ошибка';
+                                                try {
+                                                    const err = await res.json();
+                                                    message = JSON.stringify(err);
+                                                } catch (_) {
+                                                }
+                                                alert('Ошибка сервера: ' + message);
+                                                return;
+                                            }
+
+                                            alert('Сохранено!');
+                                            /* после сохранения перезагрузи данные, чтобы форма обновилась */
+                                            fetchEducation(person.id);
+
                                         }}
                                     >
-                                        Удалить
+                                        Сохранить
                                     </button>
-                                )}
-                            </div>
+
+
+                                    {formData.id && (
+                                        <button
+                                            type="button"
+                                            className="person-modal-delete-button"
+                                            onClick={async () => {
+                                                if (!window.confirm('Точно удалить?')) return;
+
+                                                try {
+                                                    const res = await fetch(`/education/${formData.id}`, {
+                                                        method: 'DELETE',
+                                                    });
+
+                                                    if (!res.ok) {
+                                                        alert('Ошибка при удалении');
+                                                        return;
+                                                    }
+
+                                                    alert('Удалено!');
+                                                    /* очистить форму */
+                                                    setFormData(prev => ({
+                                                        ...prev,
+                                                        id: null,
+                                                        education_type: '',
+                                                        institution: '',
+                                                        start_date: '',
+                                                        start_date_text: '',
+                                                        end_date: '',
+                                                        end_date_text: '',
+                                                        description: '',
+                                                    }));
+                                                } catch (e) {
+                                                    alert('Ошибка сети: ' + e.message);
+                                                }
+                                            }}
+                                        >
+                                            Удалить
+                                        </button>
+                                    )}
+                                </div>
+                            }
+
 
                         </>
                     )}
@@ -742,6 +788,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="text"
                                     value={formData.position}
                                     onChange={(e) => updateField('position', e.target.value)}
+                                    disabled={readOnly}
                                 />
                                 {errors.position && <span className="error">{errors.position}</span>}
                             </label>
@@ -751,6 +798,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="text"
                                     value={formData.place}
                                     onChange={(e) => updateField('place', e.target.value)}
+                                    disabled={readOnly}
                                 />
                             </label>
                             <label>
@@ -759,6 +807,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="date"
                                     value={formData.start_date}
                                     onChange={(e) => updateField('start_date', e.target.value)}
+                                    disabled={readOnly}
                                 />
                             </label>
                             <label>
@@ -767,6 +816,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="text"
                                     value={formData.start_date_text}
                                     onChange={(e) => updateField('start_date_text', e.target.value)}
+                                    disabled={readOnly}
                                 />
                             </label>
                             <label>
@@ -775,6 +825,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="date"
                                     value={formData.end_date}
                                     onChange={(e) => updateField('end_date', e.target.value)}
+                                    disabled={readOnly}
                                 />
                             </label>
                             <label>
@@ -783,6 +834,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="text"
                                     value={formData.end_date_text}
                                     onChange={(e) => updateField('end_date_text', e.target.value)}
+                                    disabled={readOnly}
                                 />
                             </label>
                             <label>
@@ -791,6 +843,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="text"
                                     value={formData.work_experience}
                                     onChange={(e) => updateField('work_experience', e.target.value)}
+                                    disabled={readOnly}
                                 />
                             </label>
                             <label>
@@ -798,85 +851,88 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                 <textarea
                                     value={formData.description}
                                     onChange={(e) => updateField('description', e.target.value)}
+                                    disabled={readOnly}
                                 />
                             </label>
-                            <div className="person-modal-info-block-buttons">
-                                <button
-                                    type="button"
-                                    className="person-modal-save-button"
-                                    onClick={async () => {
-                                        /* валидация */
-                                        const errs = {};
-                                        if (!formData.position) errs.position = 'Обязательно';
-                                        if (Object.keys(errs).length) {
-                                            setErrors(errs);
-                                            return;
-                                        }
-                                        setErrors({});
 
-                                        const payload = {
-                                            person_id: person.id,
-                                            position: formData.position,
-                                            place: formData.place,
-                                            start_date: formData.start_date,
-                                            start_date_text: formData.start_date_text,
-                                            end_date: formData.end_date,
-                                            end_date_text: formData.end_date_text,
-                                            work_experience: formData.work_experience,
-                                            description: formData.description,
-                                        };
-
-                                        const isUpdate = !!formData.id;
-                                        const res = await fetch(
-                                            isUpdate
-                                                ? `/job/${formData.id}`              // PUT
-                                                : `/person/${person.id}/job`,        // POST
-                                            {
-                                                method: isUpdate ? 'PUT' : 'POST',
-                                                headers: {
-                                                    'Content-Type': 'application/json',
-                                                    'Accept': 'application/json'
-                                                },
-                                                body: JSON.stringify(payload),
-                                            }
-                                        );
-
-                                        if (!res.ok) {
-                                            alert('Ошибка сервера');
-                                            return;
-                                        }
-
-                                        alert('Сохранено!');
-                                        /* перезагрузить данные */
-                                        setActiveCategory(null);           // закрыть блок
-                                        setActiveCategory('job');          // открыть снова → хук fetchJob сработает
-                                    }}
-                                >
-                                    Сохранить
-                                </button>
-
-                                {formData.id && (
+                            {!readOnly &&
+                                <div className="person-modal-info-block-buttons">
                                     <button
                                         type="button"
-                                        className="person-modal-delete-button"
+                                        className="person-modal-save-button"
                                         onClick={async () => {
-                                            if (!window.confirm('Точно удалить?')) return;
+                                            /* валидация */
+                                            const errs = {};
+                                            if (!formData.position) errs.position = 'Обязательно';
+                                            if (Object.keys(errs).length) {
+                                                setErrors(errs);
+                                                return;
+                                            }
+                                            setErrors({});
 
-                                            const res = await fetch(`/job/${formData.id}`, {method: 'DELETE'});
+                                            const payload = {
+                                                person_id: person.id,
+                                                position: formData.position,
+                                                place: formData.place,
+                                                start_date: formData.start_date,
+                                                start_date_text: formData.start_date_text,
+                                                end_date: formData.end_date,
+                                                end_date_text: formData.end_date_text,
+                                                work_experience: formData.work_experience,
+                                                description: formData.description,
+                                            };
+
+                                            const isUpdate = !!formData.id;
+                                            const res = await fetch(
+                                                isUpdate
+                                                    ? `/job/${formData.id}`              // PUT
+                                                    : `/person/${person.id}/job`,        // POST
+                                                {
+                                                    method: isUpdate ? 'PUT' : 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                        'Accept': 'application/json'
+                                                    },
+                                                    body: JSON.stringify(payload),
+                                                }
+                                            );
+
                                             if (!res.ok) {
-                                                alert('Ошибка при удалении');
+                                                alert('Ошибка сервера');
                                                 return;
                                             }
 
-                                            alert('Удалено!');
-                                            setFormData(emptyDataByCategory.job);
+                                            alert('Сохранено!');
+                                            /* перезагрузить данные */
+                                            setActiveCategory(null);           // закрыть блок
+                                            setActiveCategory('job');          // открыть снова → хук fetchJob сработает
                                         }}
                                     >
-                                        Удалить
+                                        Сохранить
                                     </button>
-                                )}
-                            </div>
 
+                                    {formData.id && (
+                                        <button
+                                            type="button"
+                                            className="person-modal-delete-button"
+                                            onClick={async () => {
+                                                if (!window.confirm('Точно удалить?')) return;
+
+                                                const res = await fetch(`/job/${formData.id}`, {method: 'DELETE'});
+                                                if (!res.ok) {
+                                                    alert('Ошибка при удалении');
+                                                    return;
+                                                }
+
+                                                alert('Удалено!');
+                                                setFormData(emptyDataByCategory.job);
+                                            }}
+                                        >
+                                            Удалить
+                                        </button>
+                                    )}
+                                </div>
+                            }
                         </>
                     )}
 
@@ -888,6 +944,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="text"
                                     value={formData.disease_name}
                                     onChange={(e) => updateField('disease_name', e.target.value)}
+                                    disabled={readOnly}
                                 />
                                 {errors.disease_name && <span className="error">{errors.disease_name}</span>}
                             </label>
@@ -897,6 +954,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="date"
                                     value={formData.diagnosis_date}
                                     onChange={(e) => updateField('diagnosis_date', e.target.value)}
+                                    disabled={readOnly}
                                 />
                             </label>
                             <label>
@@ -905,6 +963,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="text"
                                     value={formData.diagnosis_date_text}
                                     onChange={(e) => updateField('diagnosis_date_text', e.target.value)}
+                                    disabled={readOnly}
                                 />
                             </label>
                             <label>
@@ -913,6 +972,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="text"
                                     value={formData.medical_organization}
                                     onChange={(e) => updateField('medical_organization', e.target.value)}
+                                    disabled={readOnly}
                                 />
                             </label>
                             <label>
@@ -921,6 +981,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                     type="text"
                                     value={formData.doctor_fullname}
                                     onChange={(e) => updateField('doctor_fullname', e.target.value)}
+                                    disabled={readOnly}
                                 />
                             </label>
                             <label>
@@ -928,95 +989,98 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
                                 <textarea
                                     value={formData.description}
                                     onChange={(e) => updateField('description', e.target.value)}
+                                    disabled={readOnly}
                                 />
                             </label>
-                            <div className="person-modal-info-block-buttons">
-                                <button
-                                    type="button"
-                                    className="person-modal-save-button"
-                                    onClick={async () => {
-                                        const errs = {};
-                                        if (!formData.disease_name) errs.disease_name = 'Обязательно';
 
-                                        if (Object.keys(errs).length) {
-                                            setErrors(errs);
-                                            return;
-                                        }
-                                        setErrors({});
-
-                                        const payload = {
-                                            person_id: person.id,
-                                            disease_name: formData.disease_name,
-                                            diagnosis_date: formData.diagnosis_date,
-                                            diagnosis_date_text: formData.diagnosis_date_text,
-                                            medical_organization: formData.medical_organization,
-                                            doctor_fullname: formData.doctor_fullname,
-                                            description: formData.description,
-                                        };
-
-                                        const isUpdate = !!formData.id;
-
-                                        const res = await fetch(
-                                            isUpdate
-                                                ? `/health_record/${formData.id}`       // PUT
-                                                : `/person/${person.id}/health_record`, // POST
-                                            {
-                                                method: isUpdate ? 'PUT' : 'POST',
-                                                headers: {
-                                                    'Content-Type': 'application/json',
-                                                    Accept: 'application/json',
-                                                },
-                                                body: JSON.stringify(payload),
-                                            }
-                                        );
-
-                                        if (!res.ok) {
-                                            let message = 'Неизвестная ошибка';
-                                            try {
-                                                const err = await res.json();
-                                                message = JSON.stringify(err);
-                                            } catch (_) {
-                                            }
-                                            alert('Ошибка сервера: ' + message);
-                                            return;
-                                        }
-
-                                        alert('Сохранено!');
-                                        fetchHealthRecord(person.id);  // обновить форму
-                                    }}
-                                >
-                                    Сохранить
-                                </button>
-
-                                {formData.id && (
+                            {!readOnly &&
+                                <div className="person-modal-info-block-buttons">
                                     <button
                                         type="button"
-                                        className="person-modal-delete-button"
+                                        className="person-modal-save-button"
                                         onClick={async () => {
-                                            if (!window.confirm('Точно удалить?')) return;
+                                            const errs = {};
+                                            if (!formData.disease_name) errs.disease_name = 'Обязательно';
 
-                                            try {
-                                                const res = await fetch(`/health_record/${formData.id}`, {
-                                                    method: 'DELETE',
-                                                });
-
-                                                if (!res.ok) {
-                                                    alert('Ошибка при удалении');
-                                                    return;
-                                                }
-
-                                                alert('Удалено!');
-                                                setFormData(emptyDataByCategory.health_record);
-                                            } catch (e) {
-                                                alert('Ошибка сети: ' + e.message);
+                                            if (Object.keys(errs).length) {
+                                                setErrors(errs);
+                                                return;
                                             }
+                                            setErrors({});
+
+                                            const payload = {
+                                                person_id: person.id,
+                                                disease_name: formData.disease_name,
+                                                diagnosis_date: formData.diagnosis_date,
+                                                diagnosis_date_text: formData.diagnosis_date_text,
+                                                medical_organization: formData.medical_organization,
+                                                doctor_fullname: formData.doctor_fullname,
+                                                description: formData.description,
+                                            };
+
+                                            const isUpdate = !!formData.id;
+
+                                            const res = await fetch(
+                                                isUpdate
+                                                    ? `/health_record/${formData.id}`       // PUT
+                                                    : `/person/${person.id}/health_record`, // POST
+                                                {
+                                                    method: isUpdate ? 'PUT' : 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                        Accept: 'application/json',
+                                                    },
+                                                    body: JSON.stringify(payload),
+                                                }
+                                            );
+
+                                            if (!res.ok) {
+                                                let message = 'Неизвестная ошибка';
+                                                try {
+                                                    const err = await res.json();
+                                                    message = JSON.stringify(err);
+                                                } catch (_) {
+                                                }
+                                                alert('Ошибка сервера: ' + message);
+                                                return;
+                                            }
+
+                                            alert('Сохранено!');
+                                            fetchHealthRecord(person.id);  // обновить форму
                                         }}
                                     >
-                                        Удалить
+                                        Сохранить
                                     </button>
-                                )}
-                            </div>
 
+                                    {formData.id && (
+                                        <button
+                                            type="button"
+                                            className="person-modal-delete-button"
+                                            onClick={async () => {
+                                                if (!window.confirm('Точно удалить?')) return;
+
+                                                try {
+                                                    const res = await fetch(`/health_record/${formData.id}`, {
+                                                        method: 'DELETE',
+                                                    });
+
+                                                    if (!res.ok) {
+                                                        alert('Ошибка при удалении');
+                                                        return;
+                                                    }
+
+                                                    alert('Удалено!');
+                                                    setFormData(emptyDataByCategory.health_record);
+                                                } catch (e) {
+                                                    alert('Ошибка сети: ' + e.message);
+                                                }
+                                            }}
+                                        >
+                                            Удалить
+                                        </button>
+                                    )}
+                                </div>
+                            }
                         </>
                     )}
                 </div>

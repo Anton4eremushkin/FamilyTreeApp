@@ -383,8 +383,8 @@
     font-weight: 500;
 }
 
-.modal-window input,
-.modal-window select {
+.modal-window input, .modal-window select {
+    box-sizing: border-box;
     width: 100%;
     padding: 8px;
     margin-top: 4px;
@@ -432,4 +432,69 @@
     margin-top: 8px;
     font-weight: bold;
 }
+
+.drag-drop-box {
+    background-color: rgba(0, 0, 0, 0.15);
+    border: 2px dashed #a0aec0;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+    color: #cbd5e1;
+    user-select: none;
+    min-height: 120px;
+    text-align: center;
+}
+
+.drag-drop-box:hover {
+    border-color: #5a67d8;
+    background-color: rgba(90, 103, 216, 0.1);
+    color: #4c51bf;
+}
+
+.drag-drop-box.drag-active {
+    border-color: #5a67d8;
+    background-color: rgba(90, 103, 216, 0.15);
+    color: #4c51bf;
+}
+
+.preview-image {
+    width: 160px;
+    height: 160px;
+    object-fit: contain;
+    border-radius: 0.5rem; /* как rounded-lg */
+    box-shadow: 0 0 8px rgba(0,0,0,0.2);
+}
+
+.add-person-modal label {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    font-size: 0.875rem; /* как text-sm */
+}
+
+.add-person-modal label select,
+.add-person-modal label input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db; /* серый из tailwind */
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.add-person-modal label select:focus,
+.add-person-modal label input:focus {
+    outline: none;
+    border-color: #6366f1; /* indigo-500 */
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+}
+
+
+
 

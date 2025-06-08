@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Education;
+use App\Models\FamilyRelation;
 use App\Models\Job;
 use App\Models\Marriage;
 use App\Models\MedicalHistory;
@@ -80,14 +81,16 @@ class PersonController extends Controller
         );
     }
 
-    // Удалить персону
     public function destroy($id)
     {
+
         $person = Person::find($id);
 
         if (!$person) {
             return response()->json(['error' => 'Person not found'], 404);
         }
+
+        FamilyRelation::where('person_from', $id)->orWhere('person_to', $id)->delete();
 
         $person->delete();
 

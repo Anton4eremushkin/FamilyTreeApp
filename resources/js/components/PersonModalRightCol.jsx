@@ -3,12 +3,13 @@ import '../../css/app.Modal.css';
 import AddPersonModal from "./AddPersonModal.jsx";
 import AddRelationModal from "./AddRelationModal.jsx";
 
-export default function PersonModalRightCol({readOnly, person}) {
+export default function PersonModalRightCol({readOnly, person, familyTreeId, updateGraphData}) {
     const [activeCategory, setActiveCategory] = useState(null);
     const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState({});
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isAddRelationOpen, setIsAddRelationOpen] = useState(false);
+    const [allPersons, setAllPersons] = useState([]);
     const userRole = window.userRole;
     const isReadOnly = ['guest', 'user'].includes(userRole);
 
@@ -28,7 +29,6 @@ export default function PersonModalRightCol({readOnly, person}) {
     };
 
     const handleCategoryClick = (key) => {
-        if (readOnly) return;
         setActiveCategory(key);
         setErrors({});
         setFormData(emptyDataByCategory[key] || {});
@@ -49,10 +49,6 @@ export default function PersonModalRightCol({readOnly, person}) {
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
-
-    if (readOnly) {
-        return null;
-    }
 
     const emptyDataByCategory = {
         marriage: {
@@ -92,6 +88,21 @@ export default function PersonModalRightCol({readOnly, person}) {
             id: null,
         },
     };
+
+    useEffect(() => {
+        if (!familyTreeId) return;
+
+        (async () => {
+            try {
+                const resp = await fetch(`/person/family/${familyTreeId}`);
+                if (!resp.ok) throw new Error('Ошибка при загрузке списка персон');
+                const data = await resp.json();
+                setAllPersons(data);
+            } catch (err) {
+                console.error(err);
+            }
+        })();
+    }, [familyTreeId]);
 
     useEffect(() => {
         if (person && person.id) {
@@ -288,7 +299,8 @@ export default function PersonModalRightCol({readOnly, person}) {
                     familyTreeId={person.family_tree_id}
                     userRole={userRole}
                     onAddPerson={(newPerson) => {
-                        // Можно сюда добавить коллбек, чтобы обновить дерево
+                        window.location.reload()
+                        updateGraphData();
                         console.log('Добавлен новый человек', newPerson);
                     }}
                 />
@@ -304,7 +316,8 @@ export default function PersonModalRightCol({readOnly, person}) {
                     familyTreeId={person.family_tree_id}
                     userRole={userRole}
                     onRelationAdded={() => {
-                        // Можно обновить дерево или показать сообщение
+                        window.location.reload()
+                        updateGraphData();
                         console.log('Связь добавлена');
                     }}
                 />
@@ -331,30 +344,38 @@ export default function PersonModalRightCol({readOnly, person}) {
                     {/* Форма для каждой категории */}
                     {activeCategory === 'marriage' && (
                         <>
-                            <label>
-                                Тут ID этой карточки человека*:
-                                <input
-                                    type="number"
-                                    value={formData.person1_id}
-                                    onChange={(e) => updateField('person1_id', e.target.value)}
-                                />
-                                {errors.person1_id && <span className="error">{errors.person1_id}</span>}
-                            </label>
+                            {/*<label>*/}
+                            {/*    Тут ID этой карточки человека*:*/}
+                            {/*    <input*/}
+                            {/*        type="number"*/}
+                            {/*        value={formData.person1_id}*/}
+                            {/*        onChange={(e) => updateField('person1_id', e.target.value)}*/}
+                            {/*        disabled={readOnly}*/}
+                            {/*    />*/}
+                            {/*    {errors.person1_id && <span className="error">{errors.person1_id}</span>}*/}
+                            {/*</label>*/}
                             <label>
                                 ФИО до свадьбы (текущая карточка):
                                 <input
                                     type="text"
                                     value={formData.premarital_surname1}
                                     onChange={(e) => updateField('premarital_surname1', e.target.value)}
+                                    disabled={readOnly}
                                 />
                             </label>
                             <label>
                                 Выберете карточку супруга/супруги*:
-                                <input
-                                    type="number"
-                                    value={formData.person2_id}
+                                <select
+                                    value={formData.person2_id || ''}
                                     onChange={(e) => updateField('person2_id', e.target.value)}
-                                />
+                                >
+                                    <option value="" disabled>Выберите человека</option>
+                                    {allPersons.map((p) => (
+                                        <option key={p.id} value={p.id}>
+                                            {p.full_name}
+                                        </option>
+                                    ))}
+                                </select>
                                 {errors.person2_id && <span className="error">{errors.person2_id}</span>}
                             </label>
                             <label>
@@ -366,7 +387,7 @@ export default function PersonModalRightCol({readOnly, person}) {
                                 />
                             </label>
                             <label>
-                                Тип брака*:
+                            Тип брака*:
                                 <select
                                     value={formData.type}
                                     onChange={(e) => updateField('type', e.target.value)}

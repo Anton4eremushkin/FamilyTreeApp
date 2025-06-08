@@ -15,6 +15,7 @@ const edgeTypes = {
     familyEdge: CustomFamilyEdge,
 };
 
+
 const TreeApp = () => {
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
@@ -22,8 +23,9 @@ const TreeApp = () => {
     const [loadingPerson, setLoadingPerson] = useState(false);
     const userRole = window.userRole;
     const isReadOnly = ['guest', 'user'].includes(userRole);
+    const familyTreeId = window.familyTreeId;
 
-
+    //апдейт графа
     useEffect(() => {
         const people = window.peopleData || [];
         const relations = window.relationData || [];
@@ -36,7 +38,7 @@ const TreeApp = () => {
     const handleNodeDoubleClick = async (_, node) => {
         setLoadingPerson(true);
         try {
-            const res = await fetch(`/person/${node.id}`); // предполагаем, что id у node — это person_id
+            const res = await fetch(`/person/${node.id}`);
             if (!res.ok) throw new Error('Ошибка загрузки персоны');
             const data = await res.json();
             setSelectedPerson(data);
@@ -73,6 +75,43 @@ const TreeApp = () => {
             alert(e.message);
         }
     };
+
+    const handleDeletePerson = async (personId) => {
+        if (!window.confirm("Ты точно хочешь удалить эту персону? Это необратимо!")) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/person/${personId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                window.location.reload();
+                alert("Персона успешно удалена");
+            } else {
+                const errorData = await response.json();
+                alert(`Ошибка при удалении: ${errorData.error || response.statusText}`);
+            }
+        } catch (error) {
+            alert(`Ошибка сети: ${error.message}`);
+        }
+    };
+
+    const updateGraphData = () => {
+        const { nodes, edges } = generateGraphData(window.peopleData, window.relationData);
+        setNodes(nodes);
+        setEdges(edges);
+        setSelectedPerson(null);
+    };
+
+    useEffect(() => {
+        updateGraphData();
+    }, []);
 
     return (
         <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
@@ -118,8 +157,11 @@ const TreeApp = () => {
                 <PersonModal
                     person={selectedPerson}
                     onClose={() => setSelectedPerson(null)}
+                    onDelete={handleDeletePerson}
+                    updateGraphData={updateGraphData}
                     onSave={handleSavePerson}
                     readOnly={isReadOnly}
+                    familyTreeId={familyTreeId}
                 />
             )}
             {loadingPerson && (

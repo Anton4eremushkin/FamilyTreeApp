@@ -3,7 +3,7 @@ import ConfirmDialog from './ConfirmDialog';
 import '../../css/app.Modal.css';
 import PersonModalRightCol from './PersonModalRightCol';
 
-export default function PersonModal({ person, onClose, onSave, readOnly = false }) {
+export default function PersonModal({ person, onClose, onSave, onDelete, updateGraphData, familyTreeId, readOnly = false }) {
     const [form, setForm] = useState({ ...person });
     const [original] = useState({ ...person });
     const [showDeath, setShowDeath] = useState(person.status === 'deceased');
@@ -267,11 +267,14 @@ export default function PersonModal({ person, onClose, onSave, readOnly = false 
                         {/* Правая колонка */}
                         <PersonModalRightCol
                             person={person}
+                            readOnly={readOnly}
+                            familyTreeId={familyTreeId}
                             activeSection={activeSection}
                             setActiveSection={setActiveSection}
                             sectionData={sectionData}
                             setSectionData={setSectionData}
                             validationErrors={validationErrors}
+                            updateGraphData={updateGraphData}
                             handleAddRecord={handleAddRecord}
                             handleFieldChange={handleFieldChange}
                             handleDelete={handleDelete}
@@ -283,7 +286,7 @@ export default function PersonModal({ person, onClose, onSave, readOnly = false 
             </div>
 
             <>
-                {/* Текущий блок с Сохранить и Закрыть */}
+                {/* блок Сохранить и Закрыть */}
                 <div className="person-modal-global-buttons">
                     {!readOnly && (
                         <button
@@ -310,9 +313,7 @@ export default function PersonModal({ person, onClose, onSave, readOnly = false 
                             type="button"
                             className="person-modal-delete-person-button"
                             onClick={() => {
-                                if (window.confirm("Ты точно хочешь удалить эту персону? Это необратимо!")) {
-                                    onDelete(person.id);
-                                }
+                                onDelete(person.id);
                             }}
                         >
                             Удалить персону

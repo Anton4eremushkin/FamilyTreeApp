@@ -72,6 +72,8 @@ export default function AddRelationModal({
                 throw new Error(err.error || 'Ошибка при добавлении связи');
             }
 
+
+
             onRelationAdded?.();
             onClose();
         } catch (e) {

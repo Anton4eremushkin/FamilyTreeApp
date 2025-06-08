@@ -8,12 +8,11 @@ use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\PersonController;
 
-use App\Http\Controllers\{
-    MarriageController,
+use App\Http\Controllers\{MarriageController,
     EducationController,
     JobController,
-    HealthRecordController
-};
+    HealthRecordController,
+    UploadController};
 
 Route::get('/', HomeController::class)->name('home');
 
@@ -70,6 +69,12 @@ Route::get('/person/{person}/health_record', [HealthRecordController::class, 'in
 Route::post('/person/{person}/health_record', [HealthRecordController::class, 'store']);
 Route::put('/health_record/{healthRecord}', [HealthRecordController::class, 'update']);
 Route::delete('/health_record/{healthRecord}', [HealthRecordController::class, 'destroy']);
+
+// routes/api.php
+Route::post('/upload', [UploadController::class, 'store']);
+
+// app/Http/Controllers/UploadController.php
+
 
 
 

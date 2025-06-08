@@ -17,6 +17,7 @@
     },
     "dependencies": {
         "@tailwindcss/postcss": "^4.1.8",
+        "react-dropzone": "^14.3.8",
         "reactflow": "^11.11.4"
     }
 }

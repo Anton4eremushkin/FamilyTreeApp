@@ -105,9 +105,9 @@ export default function PersonEvent({
                                     onChange={e => update('gender', e.target.value)}
                                     disabled={true}
                                 >
-                                    <option value="Мужской">male</option>
-                                    <option value="Женский">female</option>
-                                    <option value="Неизвестен">other</option>
+                                    <option value="male">Мужской</option>
+                                    <option value="female">Женский</option>
+                                    <option value="other">Неизвестен</option>
                                 </select>
                             </div>
 
@@ -151,9 +151,9 @@ export default function PersonEvent({
                                     onChange={e => update('status', e.target.value)}
                                     disabled={true}
                                 >
-                                    <option value="Живущий">living</option>
-                                    <option value="Покойный">deceased</option>
-                                    <option value="Неизвестно">unknown</option>
+                                    <option value="living">Живущий</option>
+                                    <option value="deceased">Покойный</option>
+                                    <option value="unknown">Неизвестно</option>
                                 </select>
                             </div>
 
@@ -194,7 +194,7 @@ export default function PersonEvent({
                             <div style={{ height: 14 }} />
                         </div>
 
-                        {/* ПРАВАЯ КОЛОНКА ПУСТАЯ */}
+                        {/* ПРАВАЯ КОЛОНКА  */}
                         <div className="person-modal-right-col">
 
                             {/* верхняя панель */}
@@ -212,15 +212,24 @@ export default function PersonEvent({
                                     ))}
                                     {events.length === 0 && <option>Нет событий</option>}
                                 </select>
-
-                                <button
-                                    type="button"
-                                    className="event-add-btn"
-                                    onClick={handleCreate}
-                                    disabled={readOnly}
-                                >
-                                    + Добавить новое
-                                </button>
+                                <div>
+                                    <button
+                                        type="button"
+                                        className="event-add-btn"
+                                        onClick={handleCreate}
+                                        disabled={readOnly}
+                                        style={{ marginRight: '8px' }}
+                                    >
+                                        + Добавить новое
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="event-add-btn"
+                                        onClick={attemptClose}
+                                    >
+                                        Вернуться назад
+                                    </button>
+                                </div>
                             </div>
 
                             {/* текстовое поле */}

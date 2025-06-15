@@ -8,6 +8,7 @@ use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\LifeEventController;
+use App\Http\Controllers\RoleUserFamilyTreeController;
 
 use App\Http\Controllers\{MarriageController,
     EducationController,
@@ -80,6 +81,10 @@ Route::prefix('person/{person}')->group(function () {
     Route::delete('events/{event}', [LifeEventController::class, 'destroy']);
 });
 
+Route::get('/users/by-tree/{familyTreeId}', [RoleUserFamilyTreeController::class, 'getByFamilyTree']);
+
+Route::post('/users/toggle-role', [RoleUserFamilyTreeController::class, 'toggleRole']);
+Route::delete('/users/remove', [RoleUserFamilyTreeController::class, 'removeUser']);
 
 
 

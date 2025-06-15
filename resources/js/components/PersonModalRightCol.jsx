@@ -342,7 +342,7 @@ export default function PersonModalRightCol({readOnly, person, familyTreeId, upd
             {isEventOpen && (
                 <PersonEvent
                     visible={true}
-                    onClose={() => setIsAddRelationOpen(false)}
+                    onClose={() => setIsEventOpen(false)}
                     basePersonId={person.id}
                     basePersonName={person.full_name}
                     familyTreeId={person.family_tree_id}

@@ -158,9 +158,9 @@ export default function PersonModal({ person, onClose, onSave, onDelete, updateG
                                     onChange={e => update('gender', e.target.value)}
                                     disabled={readOnly}
                                 >
-                                    <option value="Мужской">male</option>
-                                    <option value="Женский">female</option>
-                                    <option value="Неизвестен">other</option>
+                                    <option value="male">Мужской</option>
+                                    <option value="female">Женский</option>
+                                    <option value="other">Неизвестен</option>
                                 </select>
                             </div>
 
@@ -212,9 +212,9 @@ export default function PersonModal({ person, onClose, onSave, onDelete, updateG
                                     onChange={e => update('status', e.target.value)}
                                     disabled={readOnly}
                                 >
-                                    <option value="Живущий">living</option>
-                                    <option value="Покойный">deceased</option>
-                                    <option value="Неизвестно">unknown</option>
+                                    <option value="living">Живущий</option>
+                                    <option value="deceased">Покойный</option>
+                                    <option value="unknown">Неизвестно</option>
                                 </select>
                             </div>
 

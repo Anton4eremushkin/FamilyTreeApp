@@ -9,7 +9,7 @@ export default function TreeHeader({ userRole, onSearchClick, onUsersClick, onTr
         <div className="tree-view-header">
             <div className="left-buttons">
                 <a href="/"><button>На главную</button></a>
-                {(isCreator || isResearcher) && <button>Пригласить в древо</button>}
+                {/* {(isCreator || isResearcher) && <button>Пригласить в древо</button>} */}
             </div>
             <div className="right-buttons">
                 <button onClick={onSearchClick}>Поиск</button>

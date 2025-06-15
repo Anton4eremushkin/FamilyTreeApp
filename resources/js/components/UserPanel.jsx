@@ -1,141 +1,248 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import Fuse from 'fuse.js';
-import ConfirmDialog from './ConfirmDialog'; // если рядом
-import '../../css/app.user-panel.css';
+import React, { useEffect, useState } from 'react';
+import '../../css/app.profile-panel.css';
 
-const UserPanel = ({ familyTreeId, onClose, onOpen, currentUserRole }) => {
-    const [users, setUsers] = useState([]);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [confirmDialog, setConfirmDialog] = useState(null);
+const ProfilePanel = ({ onClose, onOpen }) => {
+    const [user, setUser] = useState(null);
+
+    // Для модалок
+    const [showRename, setShowRename] = useState(false);
+    const [showChangePassword, setShowChangePassword] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+    // Временные поля
+    const [newUsername, setNewUsername] = useState('');
+    const [oldPassword, setOldPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [deletePassword, setDeletePassword] = useState('');
+
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         onOpen?.();
+        fetch('/user/profile')
+            .then((res) => res.json())
+            .then((data) => {
+                setUser(data);
+                setNewUsername(data.username);
+            })
+            .catch((err) => console.error('Ошибка при загрузке профиля:', err));
     }, []);
 
-    useEffect(() => {
-        fetch(`/users/by-tree/${familyTreeId}`)
-            .then(res => res.json())
-            .then(data => setUsers(data))
-            .catch(error => console.error('Ошибка при получении пользователей:', error));
-    }, [familyTreeId]);
+    if (!user) return null;
 
-    const fuse = useMemo(() => {
-        return new Fuse(users, {
-            keys: ['name'],
-            threshold: 0.3,
-        });
-    }, [users]);
+    // Хэндлеры кнопок
 
-    const filteredUsers = useMemo(() => {
-        if (!searchQuery.trim()) return users;
-        return fuse.search(searchQuery).map(result => result.item);
-    }, [searchQuery, fuse, users]);
-
-    const toggleRole = async (user) => {
-        const newRoleName = user.role === 3 ? 'исследователь' : 'пользователь';
-
-        setConfirmDialog({
-            text: `Сменить роль пользователя "${user.name}" на "${newRoleName}"?`,
-            onYes: async () => {
-                try {
-                    await fetch('/users/toggle-role', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ userId: user.id, familyTreeId }),
-                    });
-
-                    // обновим юзеров
-                    const res = await fetch(`/users/by-tree/${familyTreeId}`);
-                    const data = await res.json();
-                    setUsers(data);
-                } catch (err) {
-                    console.error('Ошибка при смене роли:', err);
-                }
-                setConfirmDialog(null);
-            },
-            onNo: () => setConfirmDialog(null),
-        });
+    const handleRename = async () => {
+        if (!newUsername.trim()) {
+            setError('Имя не может быть пустым');
+            return;
+        }
+        setLoading(true);
+        setError('');
+        try {
+            const res = await fetch('/user/profile/rename', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: newUsername }),
+            });
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || 'Ошибка при изменении имени');
+            }
+            setUser((u) => ({ ...u, username: newUsername }));
+            setShowRename(false);
+        } catch (e) {
+            setError(e.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const removeUser = (user) => {
-        setConfirmDialog({
-            text: `Удалить пользователя "${user.name}" из текущего древа?`,
-            onYes: async () => {
-                try {
-                    await fetch('/users/remove', {
-                        method: 'DELETE',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ userId: user.id, familyTreeId }),
-                    });
+    const handleChangePassword = async () => {
+        if (!oldPassword || !newPassword || !confirmPassword) {
+            setError('Заполните все поля');
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            setError('Новые пароли не совпадают');
+            return;
+        }
+        setLoading(true);
+        setError('');
+        try {
+            const res = await fetch('/user/profile/change-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ old_password: oldPassword, new_password: newPassword }),
+            });
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || 'Ошибка при изменении пароля');
+            }
+            setShowChangePassword(false);
+            setOldPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+        } catch (e) {
+            setError(e.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-                    // обновим юзеров
-                    const res = await fetch(`/users/by-tree/${familyTreeId}`);
-                    const data = await res.json();
-                    setUsers(data);
-                } catch (err) {
-                    console.error('Ошибка при удалении пользователя:', err);
-                }
-                setConfirmDialog(null);
-            },
-            onNo: () => setConfirmDialog(null),
-        });
+    const handleDeleteAccount = async () => {
+        if (!deletePassword) {
+            setError('Введите пароль для подтверждения удаления');
+            return;
+        }
+        setLoading(true);
+        setError('');
+        try {
+            const res = await fetch('/user/profile/delete-account', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: deletePassword }),
+            });
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || 'Ошибка при удалении аккаунта');
+            }
+            // Логично после удаления редиректить куда-то (выйти с сайта)
+            window.location.href = '/logout';
+        } catch (e) {
+            setError(e.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <div className="search-panel">
-            <div className="search-panel-header">
-                <span className="search-title">Пользователи древа</span>
-                <span className="close-button" onClick={onClose}>×</span>
+        <div className="profile-panel">
+            <div className="profile-panel-header">
+                <span className="profile-title">Профиль</span>
+                <button className="close-button" onClick={onClose}>
+                    ×
+                </button>
             </div>
 
-            <input
-                className="search-input"
-                type="text"
-                placeholder="Поиск..."
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-            />
-
-            <ul className="person-list">
-                {filteredUsers.map(user => {
-                    const isCreator = user.role === 1;
-                    return (
-                        <li key={user.id} className="person-item">
-                            <img className="person-avatar" src="/storage/default-user.png" alt={user.name} />
-                            <span className="person-name">{user.name}</span>
-
-                            {!isCreator && (
-                                <div className="user-actions">
-                                    <button
-                                        className="user-role-toggle"
-                                        title="Сменить роль"
-                                        onClick={() => toggleRole(user)}
-                                    >
-                                        {user.role === 3 ? '↑' : '↓'}
-                                    </button>
-                                    <button
-                                        className="user-remove"
-                                        title="Удалить"
-                                        onClick={() => removeUser(user)}
-                                    >
-                                        ×
-                                    </button>
-                                </div>
-                            )}
-                        </li>
-                    );
-                })}
-            </ul>
-
-            {confirmDialog && (
-                <ConfirmDialog
-                    text={confirmDialog.text}
-                    onYes={confirmDialog.onYes}
-                    onNo={confirmDialog.onNo}
+            <div className="profile-content">
+                <img
+                    src={`/storage/${user.url_img || 'default-user.png'}`}
+                    alt="Аватар"
+                    className="profile-avatar"
+                    onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = '/storage/default-user.png';
+                    }}
                 />
+                <div className="profile-name">{user.username}</div>
+
+                {/* Кнопки */}
+                <button className="profile-btn blue" onClick={() => setShowRename(true)}>
+                    Изменить имя
+                </button>
+                <button className="profile-btn blue" onClick={() => setShowChangePassword(true)}>
+                    Изменить пароль
+                </button>
+                <button className="profile-btn red" onClick={() => setShowDeleteConfirm(true)}>
+                    Удалить аккаунт
+                </button>
+            </div>
+
+            {/* Модалки */}
+
+            {/* Изменение имени */}
+            {showRename && (
+                <div className="modal-backdrop">
+                    <div className="modal">
+                        <h3>Изменить имя</h3>
+                        <input
+                            type="text"
+                            value={newUsername}
+                            onChange={(e) => setNewUsername(e.target.value)}
+                            disabled={loading}
+                        />
+                        {error && <p className="error">{error}</p>}
+                        <div className="modal-buttons">
+                            <button onClick={() => setShowRename(false)} disabled={loading}>
+                                Отмена
+                            </button>
+                            <button onClick={handleRename} disabled={loading}>
+                                Сохранить
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Изменение пароля */}
+            {showChangePassword && (
+                <div className="modal-backdrop">
+                    <div className="modal">
+                        <h3>Изменить пароль</h3>
+                        <input
+                            type="password"
+                            placeholder="Текущий пароль"
+                            value={oldPassword}
+                            onChange={(e) => setOldPassword(e.target.value)}
+                            disabled={loading}
+                        />
+                        <input
+                            type="password"
+                            placeholder="Новый пароль"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            disabled={loading}
+                        />
+                        <input
+                            type="password"
+                            placeholder="Повторите новый пароль"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            disabled={loading}
+                        />
+                        {error && <p className="error">{error}</p>}
+                        <div className="modal-buttons">
+                            <button onClick={() => setShowChangePassword(false)} disabled={loading}>
+                                Отмена
+                            </button>
+                            <button onClick={handleChangePassword} disabled={loading}>
+                                Сохранить
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Подтверждение удаления */}
+            {showDeleteConfirm && (
+                <div className="modal-backdrop">
+                    <div className="modal">
+                        <h3>Удалить аккаунт</h3>
+                        <p>Введите пароль для подтверждения удаления аккаунта</p>
+                        <input
+                            type="password"
+                            placeholder="Пароль"
+                            value={deletePassword}
+                            onChange={(e) => setDeletePassword(e.target.value)}
+                            disabled={loading}
+                        />
+                        {error && <p className="error">{error}</p>}
+                        <div className="modal-buttons">
+                            <button onClick={() => setShowDeleteConfirm(false)} disabled={loading}>
+                                Отмена
+                            </button>
+                            <button onClick={handleDeleteAccount} disabled={loading} className="red">
+                                Удалить
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );
 };
 
-export default UserPanel;
+export default ProfilePanel;

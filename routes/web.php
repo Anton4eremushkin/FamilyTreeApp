@@ -91,5 +91,10 @@ Route::post('/family-tree/{id}/rename', [FamilyTreeController::class, 'rename'])
 Route::delete('/family-tree/{id}', [FamilyTreeController::class, 'destroy']);
 
 Route::get('/user/profile', [UserController::class, 'getProfile']);
+Route::post('/user/profile/update-photo', [UserController::class, 'updatePhoto']);
+
+Route::post('/user/profile/rename', [UserController::class, 'rename']);
+Route::post('/user/profile/change-password', [UserController::class, 'changePassword']);
+Route::post('/user/profile/delete-account', [UserController::class, 'deleteAccount']);
 
 

@@ -11,13 +11,10 @@
 <div class="page">
     <div class="tree-wrapper">
         <div class="tree-header">
-            <a href="{{ url('/') }}" class="logo-link">
-                <img src="/public/storage/logo.png" alt="Логотип" class="logo-image" />
-            </a>
-            <a href="{{ route('family-tree.create') }}"><button>Дерево</button></a>
+            <button>Логотип</button>
+            <a href="{{ route('family-tree.create') }}"><button>Древо</button></a>
             <button>Публичные древа</button>
             @auth
-                <button>Профиль</button>
                 <form method="POST" action="{{ route('logout') }}" style="display: inline;">
                     @csrf
                     <button type="submit">Выйти</button>

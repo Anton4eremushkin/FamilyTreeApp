@@ -14,12 +14,14 @@ class User extends Authenticatable
 
     protected $table = 'users'; // явно указываем таблицу
 
+
     protected $fillable = [
         'username',
         'email',
         'password',
         'url_img',
     ];
+
 
     protected $hidden = [
         'password',

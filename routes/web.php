@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\LifeEventController;
 use App\Http\Controllers\RoleUserFamilyTreeController;
+use App\Http\Controllers\UserController;
 
 use App\Http\Controllers\{MarriageController,
     EducationController,
@@ -86,6 +87,9 @@ Route::get('/users/by-tree/{familyTreeId}', [RoleUserFamilyTreeController::class
 Route::post('/users/toggle-role', [RoleUserFamilyTreeController::class, 'toggleRole']);
 Route::delete('/users/remove', [RoleUserFamilyTreeController::class, 'removeUser']);
 
+Route::post('/family-tree/{id}/rename', [FamilyTreeController::class, 'rename']);
+Route::delete('/family-tree/{id}', [FamilyTreeController::class, 'destroy']);
 
+Route::get('/user/profile', [UserController::class, 'getProfile']);
 
 

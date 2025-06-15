@@ -25,6 +25,8 @@
     window.relationData = @json($relations);
     window.userRole = @json(auth()->user()?->roleInTree($treeId) ?? 'guest');
     window.familyTreeId = @json($treeId);
+    window.treeName = @json($treeName);
+
 </script>
 
 

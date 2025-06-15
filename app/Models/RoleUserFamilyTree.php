@@ -11,6 +11,7 @@ class RoleUserFamilyTree extends Model
 
     // Указываем таблицу, если она не следует по умолчанию (plural form)
     protected $table = 'role_user_family_tree';
+    public $timestamps = false;
 
     // Разрешаем массовое присваивание для этих полей
     protected $fillable = [

@@ -1,0 +1,78 @@
+.tree-settings-panel {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 340px;
+    height: auto;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 16px;
+    padding: 20px;
+    z-index: 1000;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+}
+
+.tree-settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tree-settings-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.close-button {
+    background: transparent;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: #888;
+    transition: color 0.2s ease;
+}
+
+.close-button:hover {
+    color: #000;
+}
+
+.tree-settings-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.settings-button {
+    padding: 14px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    background: transparent;
+    border: 2px solid;
+    transition: all 0.2s ease;
+}
+
+.settings-button.rename {
+    border-color: #1976d2;
+    color: #1976d2;
+}
+
+.settings-button.rename:hover {
+    background-color: rgba(25, 118, 210, 0.1);
+}
+
+.settings-button.delete {
+    border-color: #e53935;
+    color: #e53935;
+}
+
+.settings-button.delete:hover {
+    background-color: rgba(229, 57, 53, 0.1);
+}

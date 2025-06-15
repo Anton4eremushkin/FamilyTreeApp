@@ -9,6 +9,8 @@ import PersonModal from './components/PersonModal';
 import TreeHeader from './components/TreeHeader.jsx';
 import SearchPanel from './components/SearchPanel.jsx';
 import UserPanel from "./components/UserPanel.jsx";
+import TreeSettings from "./components/TreeSettings.jsx";
+import ProfilePanel from "./components/ProfilePanel.jsx";
 
 
 const nodeTypes = {
@@ -30,6 +32,8 @@ const TreeApp = () => {
     const familyTreeId = window.familyTreeId;
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isUsersOpen, setIsUsersOpen] = useState(false);
+    const [isTreeSettingsOpen, setIsTreeSettingsOpen] = useState(false);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
 
 
     //апдейт графа
@@ -140,6 +144,8 @@ const TreeApp = () => {
             <TreeHeader userRole={window.userRole}
             onSearchClick={() => setIsSearchOpen(prev => !prev)}
             onUsersClick={() => setIsUsersOpen(prev => !prev)}
+            onTreeSettingsClick={() => setIsTreeSettingsOpen(prev => !prev)}
+            onProfileClick={() => setIsProfileOpen(prev => !prev)}
 
             />
             <div style={{flexGrow: 1, position: 'relative'}}>
@@ -183,7 +189,11 @@ const TreeApp = () => {
                     />
                     {isSearchOpen && (
                         <SearchPanel
-                            onOpen={() => setIsUsersOpen(false)}
+                            onOpen={() => {
+                                setIsUsersOpen(false);
+                                setIsTreeSettingsOpen(false);
+                                setIsProfileOpen(false);
+                            }}
                             onClose={() => setIsSearchOpen(false)}
                             onPersonSelect={handlePersonSearchSelect}
                             familyTreeId={familyTreeId}
@@ -191,8 +201,36 @@ const TreeApp = () => {
                     )}
                     {isUsersOpen && (
                         <UserPanel
-                            onOpen={() => setIsSearchOpen(false)}
+                            onOpen={() => {
+                                setIsSearchOpen(false);
+                                setIsTreeSettingsOpen(false);
+                                setIsProfileOpen(false);
+                            }}
                             onClose={() => setIsUsersOpen(false)}
+                            familyTreeId={familyTreeId}
+                        />
+                    )}
+                    {isTreeSettingsOpen && (
+                        <TreeSettings
+                            onOpen={() => {
+                                setIsSearchOpen(false);
+                                setIsUsersOpen(false);
+                                setIsProfileOpen(false);
+                            }}
+                            onClose={() => setIsTreeSettingsOpen(false)}
+                            familyTreeId={familyTreeId}
+                            treeName={window.treeName}
+                        />
+                    )}
+                    {isProfileOpen && (
+                        <ProfilePanel
+                            onOpen={() => {
+                                setIsUsersOpen(false);
+                                setIsTreeSettingsOpen(false);
+                                setIsSearchOpen(false);
+                            }}
+                            onClose={() => setIsProfileOpen(false)}
+                            onPersonSelect={handlePersonSearchSelect}
                             familyTreeId={familyTreeId}
                         />
                     )}

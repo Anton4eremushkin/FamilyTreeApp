@@ -16,7 +16,7 @@ class RoleUserFamilyTreeController extends Controller
                 return [
                     'id' => $item->user->id,
                     'name' => $item->user->username,
-                    'role' => $item->role_id, // можно заменить на $item->role->name, если нужна роль текстом
+                    'role' => $item->role_id,
                 ];
             });
 
@@ -27,7 +27,7 @@ class RoleUserFamilyTreeController extends Controller
     {
         $validated = $request->validate([
             'userId' => 'required|integer|exists:users,id',
-            'familyTreeId' => 'required|integer|exists:family_trees,id',
+            'familyTreeId' => 'required|integer|exists:family_tree,id',
         ]);
 
         $relation = RoleUserFamilyTree::where('user_id', $validated['userId'])
@@ -38,15 +38,17 @@ class RoleUserFamilyTreeController extends Controller
             return response()->json(['error' => 'Связь не найдена'], 404);
         }
 
-        if ($relation->role === 3) {
-            $relation->role = 2; // пользователь -> исследователь
-        } elseif ($relation->role === 2) {
-            $relation->role = 3; // исследователь -> пользователь
+        if ($relation->role_id === 3) {
+            $newRole = 2; // пользователь -> исследователь
+        } elseif ($relation->role_id === 2) {
+            $newRole = 3; // исследователь -> пользователь
         } else {
             return response()->json(['error' => 'Нельзя изменить роль создателя'], 403);
         }
 
-        $relation->save();
+        RoleUserFamilyTree::where('user_id', $validated['userId'])
+            ->where('family_tree_id', $validated['familyTreeId'])
+            ->update(['role_id' => $newRole]);
 
         return response()->json(['message' => 'Роль обновлена']);
     }
@@ -55,7 +57,7 @@ class RoleUserFamilyTreeController extends Controller
     {
         $validated = $request->validate([
             'userId' => 'required|integer|exists:users,id',
-            'familyTreeId' => 'required|integer|exists:family_trees,id',
+            'familyTreeId' => 'required|integer|exists:family_tree,id',
         ]);
 
         $relation = RoleUserFamilyTree::where('user_id', $validated['userId'])
@@ -66,13 +68,14 @@ class RoleUserFamilyTreeController extends Controller
             return response()->json(['error' => 'Связь не найдена'], 404);
         }
 
-        if ($relation->role === 1) {
+        if ($relation->role_id === 1) {
             return response()->json(['error' => 'Нельзя удалить создателя древа'], 403);
         }
 
-        $relation->delete();
+        RoleUserFamilyTree::where('user_id', $validated['userId'])
+            ->where('family_tree_id', $validated['familyTreeId'])
+            ->delete();
 
         return response()->json(['message' => 'Пользователь удалён из древа']);
     }
-
 }

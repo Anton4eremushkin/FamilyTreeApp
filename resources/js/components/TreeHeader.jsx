@@ -1,7 +1,7 @@
 // resources/js/components/TreeHeader.jsx
 import React from 'react';
 
-export default function TreeHeader({ userRole, onSearchClick, onUsersClick }) {
+export default function TreeHeader({ userRole, onSearchClick, onUsersClick, onTreeSettingsClick, onProfileClick }) {
     const isCreator = ['creator'].includes(userRole);
     const isResearcher = ['researcher'].includes(userRole);
 
@@ -15,9 +15,9 @@ export default function TreeHeader({ userRole, onSearchClick, onUsersClick }) {
                 <button onClick={onSearchClick}>Поиск</button>
                 {isCreator && <>
                     <button onClick={onUsersClick}>Пользователи</button>
-                    <button>Настройки древа</button>
+                    <button onClick={onTreeSettingsClick}>Настройки древа</button>
                 </>}
-                <button>Профиль</button>
+                <button onClick={onProfileClick}>Профиль</button>
             </div>
         </div>
     );

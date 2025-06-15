@@ -85,7 +85,7 @@ const UserPanel = ({ familyTreeId, onClose, onOpen, currentUserRole }) => {
         <div className="search-panel">
             <div className="search-panel-header">
                 <span className="search-title">Пользователи древа</span>
-                <span className="search-close" onClick={onClose}>×</span>
+                <span className="close-button" onClick={onClose}>×</span>
             </div>
 
             <input
